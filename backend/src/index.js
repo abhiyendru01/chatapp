@@ -15,7 +15,7 @@ const __dirname = path.resolve();
 
 const allowedOrigins = [
   "http://localhost:5173", // Development frontend
-  "https://your-frontend-domain.vercel.app", // Replace with your actual Vercel domain
+  "https://chatapp003.vercel.app", // Replace with your actual Vercel domain
 ];
 
 app.use(express.json());
