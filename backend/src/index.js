@@ -18,10 +18,7 @@ const allowedOrigins = [
   "https://chatapp003.vercel.app", // Replace with your actual Vercel domain
 ];
 
-app.use(express.json());
-app.use(cookieParser());
-
-// Improved CORS configuration
+// CORS configuration for both development and production
 app.use(
   cors({
     origin: function (origin, callback) {
@@ -31,9 +28,12 @@ app.use(
         callback(new Error("Not allowed by CORS"));
       }
     },
-    credentials: true,
+    credentials: true, // Allow cookies to be sent with requests
   })
 );
+
+app.use(express.json());
+app.use(cookieParser());
 
 // API routes
 app.use("/api/auth", authRoutes);
