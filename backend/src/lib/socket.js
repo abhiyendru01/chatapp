@@ -5,21 +5,9 @@ import express from "express";
 const app = express();
 const server = http.createServer(app);
 
-const allowedOrigins = [
-  process.env.DEV_FRONTEND_URL || "http://localhost:5173",  // Development frontend URL
-  process.env.PROD_FRONTEND_URL || "https://chataapp003.vercel.app",  // Production frontend URL
-];
-
 const io = new Server(server, {
   cors: {
-    origin: function(origin, callback) {
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
-      }
-    },
-    credentials: true,
+    origin: ["https://chatapp003.vercel.app"],
   },
 });
 
@@ -27,7 +15,7 @@ export function getReceiverSocketId(userId) {
   return userSocketMap[userId];
 }
 
-// Used to store online users
+// used to store online users
 const userSocketMap = {}; // {userId: socketId}
 
 io.on("connection", (socket) => {
