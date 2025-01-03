@@ -32,12 +32,7 @@ app.use(
   })
 );
 
-app.get('/test-cors', (req, res) => {
-  res.status(200).json({ message: "CORS Test Success" });
-});
 
-console.log("Origin:", req.get('origin'));
-console.log("Cookies:", req.cookies);
 
 app.use(express.json());
 app.use(cookieParser());
