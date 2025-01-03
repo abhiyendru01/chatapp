@@ -70,6 +70,8 @@ export const sendMessage = async (req, res) => {
     const receiverSocketId = getReceiverSocketId(receiverId);
     if (receiverSocketId) {
       io.to(receiverSocketId).emit("newMessage", newMessage);
+    } else {
+      console.warn(`Receiver socket ID not found for user ${receiverId}`);
     }
 
     res.status(201).json(newMessage);
