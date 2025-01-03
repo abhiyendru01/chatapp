@@ -30,8 +30,6 @@ io.on("connection", (socket) => {
   });
 });
 
-export { io, app, server, getReceiverSocketId };
+export { io, server }; // Exporting only the necessary items
 
-export function getReceiverSocketId(userId) {
-  return userSocketMap[userId];
-}
+// Removed the re-export of 'getReceiverSocketId'
