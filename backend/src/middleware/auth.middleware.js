@@ -5,11 +5,11 @@ export const protectRoute = async (req, res, next) => {
   try {
     const token = req.cookies.jwt;
 
+    console.log("Token Received:", token); // Log token received from request
+
     if (!token) {
       return res.status(401).json({ message: 'Unauthorized - No Token Provided' });
     }
-
-    console.log("Token:", token); // Log the token
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
@@ -21,7 +21,7 @@ export const protectRoute = async (req, res, next) => {
 
     const user = await User.findById(decoded.userId).select('-password');
 
-    console.log("User:", user); // Log the user
+    console.log("User Data:", user); // Log the user data fetched from the database
 
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
@@ -34,4 +34,3 @@ export const protectRoute = async (req, res, next) => {
     res.status(500).json({ message: 'Internal server error' });
   }
 };
-s
