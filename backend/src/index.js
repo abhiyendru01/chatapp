@@ -6,52 +6,19 @@ import path from "path";
 import { connectDB } from "./lib/db.js";
 import authRoutes from "./routes/auth.route.js";
 import messageRoutes from "./routes/message.route.js";
-import { Server } from "socket.io";
-import http from "http";
+import { app, server } from "./lib/socket.js"; // Ensure proper socket import
 
 dotenv.config();
 
-const PORT = process.env.PORT || 5001;
+const PORT = process.env.PORT || 5001; // Default to 5001 if PORT is not defined
 const __dirname = path.resolve();
 
 const allowedOrigins = [
-  "http://localhost:5173",
+  "http://localhost:5173", 
   "https://chatapp003.vercel.app",
 ];
 
-// CORS configuration
-const app = express();
-const server = http.createServer(app);
-
-const io = new Server(server, {
-  cors: {
-    origin: allowedOrigins,
-    credentials: true,
-  },
-});
-
-const userSocketMap = {}; // {userId: socketId}
-
-io.on("connection", (socket) => {
-  console.log("A user connected", socket.id);
-
-  const userId = socket.handshake.query.userId;
-  if (userId) userSocketMap[userId] = socket.id;
-
-  io.emit("getOnlineUsers", Object.keys(userSocketMap));
-
-  socket.on("disconnect", () => {
-    console.log("A user disconnected", socket.id);
-    if (userId && userSocketMap[userId]) {
-      delete userSocketMap[userId];
-      io.emit("getOnlineUsers", Object.keys(userSocketMap));
-    }
-  });
-});
-
-app.use(express.json());
-app.use(cookieParser());
-
+// CORS configuration for both development and production
 app.use(
   cors({
     origin: function (origin, callback) {
@@ -61,36 +28,28 @@ app.use(
         callback(new Error("Not allowed by CORS"));
       }
     },
-    credentials: true,
+    credentials: true, // Allow cookies to be sent with requests
   })
 );
+
+app.use(express.json());
+app.use(cookieParser());
 
 // API routes
 app.use("/api/auth", authRoutes);
 app.use("/api/messages", messageRoutes);
 
 // Serve static files in production
-const __filename = fileURLToPath(import.meta.url);
-
 if (process.env.NODE_ENV === "production") {
-  const frontendBuildPath = path.join(__dirname, "../frontend/dist");
+  app.use(express.static(path.join(__dirname, "../frontend/dist")));
 
-  // Serve static files from the frontend build directory
-  app.use(express.static(frontendBuildPath));
-
-  // Catch-all route to serve the React app's index.html
   app.get("*", (req, res) => {
-    res.sendFile(path.join(frontendBuildPath, "index.html"), (err) => {
-      if (err) {
-        console.error("Error sending index.html:", err.message);
-        res.status(500).send(err.message);
-      }
-    });
+    res.sendFile(path.join(__dirname, "../frontend", "dist", "index.html"));
   });
 }
 
-connectDB();
-
+// Start server
 server.listen(PORT, () => {
   console.log(`Server is running on PORT: ${PORT}`);
+  connectDB(); // Ensure proper database connection
 });
