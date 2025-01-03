@@ -15,7 +15,7 @@ const __dirname = path.resolve();
 
 const allowedOrigins = [
   "http://localhost:5173", 
-  "https://fullstack-chat-4vla6v6q8-abhiyendru01s-projects.vercel.app",
+  "https://chatapp003.vercel.app",
 ];
 
 // CORS configuration for both development and production
