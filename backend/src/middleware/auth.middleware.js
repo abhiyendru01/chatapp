@@ -8,7 +8,7 @@ export const protectRoute = async (req, res, next) => {
     console.log("Token Received:", token); // Log token received from request
 
     if (!token) {
-      return res.status(401).json({ message: 'Unauthorized - No Token Provided' });
+      return next(); // Skip unauthorized response and move to next middleware
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
@@ -16,7 +16,7 @@ export const protectRoute = async (req, res, next) => {
     console.log("Decoded Token:", decoded); // Log the decoded token
 
     if (!decoded) {
-      return res.status(401).json({ message: 'Unauthorized - Invalid Token' });
+      return next(); // Skip unauthorized response and move to next middleware
     }
 
     const user = await User.findById(decoded.userId).select('-password');
@@ -24,13 +24,13 @@ export const protectRoute = async (req, res, next) => {
     console.log("User Data:", user); // Log the user data fetched from the database
 
     if (!user) {
-      return res.status(404).json({ message: 'User not found' });
+      return next(); // Skip unauthorized response and move to next middleware
     }
 
     req.user = user;
     next();
   } catch (error) {
     console.error('Error in protectRoute middleware: ', error.message);
-    res.status(500).json({ message: 'Internal server error' });
+    return next(); // Skip unauthorized response and move to next middleware
   }
 };
