@@ -70,13 +70,22 @@ app.use("/api/auth", authRoutes);
 app.use("/api/messages", messageRoutes);
 
 // Serve static files in production
-if (process.env.NODE_ENV === "production") {
-  const frontendBuildPath = `https://${process.env.VERCEL_URL}/`;
+const __filename = fileURLToPath(import.meta.url);
 
+if (process.env.NODE_ENV === "production") {
+  const frontendBuildPath = path.join(__dirname, "../frontend/dist");
+
+  // Serve static files from the frontend build directory
   app.use(express.static(frontendBuildPath));
 
+  // Catch-all route to serve the React app's index.html
   app.get("*", (req, res) => {
-    res.sendFile(path.join(frontendBuildPath, "index.html"));
+    res.sendFile(path.join(frontendBuildPath, "index.html"), (err) => {
+      if (err) {
+        console.error("Error sending index.html:", err.message);
+        res.status(500).send(err.message);
+      }
+    });
   });
 }
 
