@@ -1,0 +1,6 @@
+/* Add the custom styling for the SweetAlert container */
+.swal-dark-container {
+    background-color: #1E1E1E;
+    backdrop-filter: blur(10px); /* Adds a blur effect */
+  }
+  
