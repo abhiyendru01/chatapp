@@ -14,8 +14,8 @@ const PORT = process.env.PORT || 5001; // Default to 5001 if PORT is not defined
 const __dirname = path.resolve();
 
 const allowedOrigins = [
-  "http://localhost:5173", // Development frontend
-  "https://chatapp003.vercel.app", // Replace with your actual Vercel domain
+  "http://localhost:5173", 
+  "https://chatapp003.vercel.app",
 ];
 
 // CORS configuration for both development and production
