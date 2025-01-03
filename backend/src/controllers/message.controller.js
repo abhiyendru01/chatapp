@@ -7,11 +7,10 @@ export const getUsersForSidebar = async (req, res) => {
   try {
     const loggedInUserId = req.user._id;
     const filteredUsers = await User.find({ _id: { $ne: loggedInUserId } }).select("-password");
-
     res.status(200).json(filteredUsers);
   } catch (error) {
-    console.error("Error in getUsersForSidebar: ", error.message);
-    res.status(500).json({ error: "Internal server error" });
+    console.error("Error in getUsersForSidebar:", error.message);
+    res.status(500).json({ error: "Unable to fetch users for sidebar." });
   }
 };
 
@@ -19,6 +18,10 @@ export const getMessages = async (req, res) => {
   try {
     const { id: userToChatId } = req.params;
     const myId = req.user._id;
+
+    if (!userToChatId) {
+      return res.status(400).json({ error: "User ID is required." });
+    }
 
     const messages = await Message.find({
       $or: [
@@ -29,8 +32,8 @@ export const getMessages = async (req, res) => {
 
     res.status(200).json(messages);
   } catch (error) {
-    console.log("Error in getMessages controller: ", error.message);
-    res.status(500).json({ error: "Internal server error" });
+    console.error("Error in getMessages:", error.message);
+    res.status(500).json({ error: "Unable to fetch messages." });
   }
 };
 
@@ -40,11 +43,19 @@ export const sendMessage = async (req, res) => {
     const { id: receiverId } = req.params;
     const senderId = req.user._id;
 
-    let imageUrl;
+    if (!receiverId || (!text && !image)) {
+      return res.status(400).json({ error: "Receiver ID and message content are required." });
+    }
+
+    let imageUrl = null;
     if (image) {
-      // Upload base64 image to cloudinary
-      const uploadResponse = await cloudinary.uploader.upload(image);
-      imageUrl = uploadResponse.secure_url;
+      try {
+        const uploadResponse = await cloudinary.uploader.upload(image, { folder: "chat_images" });
+        imageUrl = uploadResponse.secure_url;
+      } catch (uploadError) {
+        console.error("Cloudinary upload error:", uploadError.message);
+        return res.status(500).json({ error: "Failed to upload image." });
+      }
     }
 
     const newMessage = new Message({
@@ -63,7 +74,7 @@ export const sendMessage = async (req, res) => {
 
     res.status(201).json(newMessage);
   } catch (error) {
-    console.log("Error in sendMessage controller: ", error.message);
-    res.status(500).json({ error: "Internal server error" });
+    console.error("Error in sendMessage:", error.message);
+    res.status(500).json({ error: "Unable to send message." });
   }
 };
