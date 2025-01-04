@@ -18,6 +18,7 @@ const allowedOrigins = [
   "https://chatapp003.vercel.app",
 ];
 
+// CORS configuration for both development and production
 app.use(
   cors({
     origin: function (origin, callback) {
@@ -31,7 +32,6 @@ app.use(
   })
 );
 
-
 app.use(express.json());
 app.use(cookieParser());
 
@@ -42,7 +42,7 @@ app.use("/api/messages", messageRoutes);
 
 if (process.env.NODE_ENV === "production") {
   app.get("*", (req, res) => {
-    res.redirect("https://chatapp003.vercel.app");
+    res.redirect("https://fullstack-chat-4vla6v6q8-abhiyendru01s-projects.vercel.app");
   });
 }
 // Serve static files in production
