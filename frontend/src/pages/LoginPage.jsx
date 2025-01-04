@@ -6,15 +6,17 @@ import { Eye, EyeOff, Loader2, Lock, Mail, MessageSquare } from "lucide-react";
 
 const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-  });
+  const [formData, setFormData] = useState({ email: "", password: "" });
   const { login, isLoggingIn } = useAuthStore();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    login(formData);
+    try {
+      const token = await login(formData); // assuming login returns a token
+      localStorage.setItem("jwt_token", token); // storing token in localStorage
+    } catch (error) {
+      console.error("Login failed", error);
+    }
   };
 
   return (

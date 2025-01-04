@@ -6,10 +6,10 @@ export const protectRoute = async (req, res, next) => {
     let token;
 
     // Check for token in cookies or Authorization header
-    if (req.cookies.jwt) {
+    if (req.cookies && req.cookies.jwt) {
       token = req.cookies.jwt;
-    } else if (req.headers.authorization) {
-      token = req.headers.authorization.split(' ')[1]; // Assuming Bearer token
+    } else if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+      token = req.headers.authorization.split(' ')[1];
     }
 
     console.log("Token Received:", token); // Log token received from request
@@ -18,16 +18,17 @@ export const protectRoute = async (req, res, next) => {
       return res.status(401).json({ message: 'Unauthorized - No Token Provided' });
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-    console.log("Decoded Token:", decoded); // Log the decoded token
-
-    if (!decoded) {
+    // Verify token
+    let decoded;
+    try {
+      decoded = jwt.verify(token, process.env.JWT_SECRET);
+      console.log("Decoded Token:", decoded); // Log the decoded token
+    } catch (err) {
       return res.status(401).json({ message: 'Unauthorized - Invalid Token' });
     }
 
+    // Fetch user data
     const user = await User.findById(decoded.userId).select('-password');
-
     console.log("User Data:", user); // Log the user data fetched from the database
 
     if (!user) {
@@ -37,7 +38,7 @@ export const protectRoute = async (req, res, next) => {
     req.user = user;
     next();
   } catch (error) {
-    console.error('Error in protectRoute middleware: ', error.message);
+    console.error('Error in protectRoute middleware:', error.message);
     res.status(500).json({ message: 'Internal server error' });
   }
 };
