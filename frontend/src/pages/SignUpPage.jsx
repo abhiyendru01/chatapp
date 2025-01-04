@@ -6,7 +6,6 @@ import AuthImagePattern from "../components/AuthImagePattern";
 import toast from "react-hot-toast";
 
 const SignUpPage = () => {
-  // State for password visibility and form data
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     fullName: "",
@@ -14,10 +13,8 @@ const SignUpPage = () => {
     password: "",
   });
 
-  // Destructuring functions from auth store
   const { signup, isSigningUp } = useAuthStore();
 
-  // Function to validate form inputs
   const validateForm = () => {
     if (!formData.fullName.trim()) return toast.error("Full name is required");
     if (!formData.email.trim()) return toast.error("Email is required");
@@ -28,7 +25,6 @@ const SignUpPage = () => {
     return true;
   };
 
-  // Function to handle form submission
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -39,10 +35,10 @@ const SignUpPage = () => {
 
   return (
     <div className="min-h-screen grid lg:grid-cols-2">
-      {/* Left side */}
+      {/* left side */}
       <div className="flex flex-col justify-center items-center p-6 sm:p-12">
         <div className="w-full max-w-md space-y-8">
-          {/* LOGO and Header */}
+          {/* LOGO */}
           <div className="text-center mb-8">
             <div className="flex flex-col items-center gap-2 group">
               <div
@@ -56,9 +52,7 @@ const SignUpPage = () => {
             </div>
           </div>
 
-          {/* Signup Form */}
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Full Name Input */}
             <div className="form-control">
               <label className="label">
                 <span className="label-text font-medium">Full Name</span>
@@ -77,7 +71,6 @@ const SignUpPage = () => {
               </div>
             </div>
 
-            {/* Email Input */}
             <div className="form-control">
               <label className="label">
                 <span className="label-text font-medium">Email</span>
@@ -96,7 +89,6 @@ const SignUpPage = () => {
               </div>
             </div>
 
-            {/* Password Input */}
             <div className="form-control">
               <label className="label">
                 <span className="label-text font-medium">Password</span>
@@ -126,7 +118,6 @@ const SignUpPage = () => {
               </div>
             </div>
 
-            {/* Submit Button */}
             <button type="submit" className="btn btn-primary w-full" disabled={isSigningUp}>
               {isSigningUp ? (
                 <>
@@ -139,7 +130,6 @@ const SignUpPage = () => {
             </button>
           </form>
 
-          {/* Redirect to Login */}
           <div className="text-center">
             <p className="text-base-content/60">
               Already have an account?{" "}
@@ -151,7 +141,8 @@ const SignUpPage = () => {
         </div>
       </div>
 
-      {/* Right side - Auth Image Pattern */}
+      {/* right side */}
+
       <AuthImagePattern
         title="Join our community"
         subtitle="Connect with friends, share moments, and stay in touch with your loved ones."
@@ -159,5 +150,4 @@ const SignUpPage = () => {
     </div>
   );
 };
-
 export default SignUpPage;
