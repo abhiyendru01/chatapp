@@ -18,11 +18,9 @@ const allowedOrigins = [
   "https://chatapp003.vercel.app",
 ];
 
-// CORS configuration for both development and production
 app.use(
   cors({
     origin: function (origin, callback) {
-      console.log("Origin:", origin); // Debugging: Log the incoming origin
       if (!origin || allowedOrigins.includes(origin)) {
         callback(null, true);
       } else {
