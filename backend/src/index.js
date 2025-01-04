@@ -22,6 +22,7 @@ const allowedOrigins = [
 app.use(
   cors({
     origin: function (origin, callback) {
+      console.log("Origin:", origin); // Debugging: Log the incoming origin
       if (!origin || allowedOrigins.includes(origin)) {
         callback(null, true);
       } else {
@@ -31,6 +32,7 @@ app.use(
     credentials: true, // Allow cookies to be sent with requests
   })
 );
+
 
 app.use(express.json());
 app.use(cookieParser());
