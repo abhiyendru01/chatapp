@@ -7,7 +7,7 @@ const ProfilePage = () => {
   const { authUser, isUpdatingProfile, updateProfile } = useAuthStore();
   const [selectedImg, setSelectedImg] = useState(null);
   const [name, setName] = useState(authUser?.fullName || "");
-  const [isSaving, setIsSaving] = useState(false);
+  const [isSaving, setIsSaving] = useState(false); // Ensure proper initialization
 
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
@@ -149,6 +149,7 @@ const ProfilePage = () => {
     title="Save"
     className="cursor-pointer flex items-center fill-lime-400 bg-lime-950 hover:bg-lime-900 active:border active:border-lime-400 rounded-md duration-100 p-2"
     onClick={handleSave}
+    disabled={isSaving} // Disable button if isSaving is true
   >
         
 
