@@ -19,25 +19,24 @@ const allowedOrigins = [
   "https://fullstack-chat-4vla6v6q8-abhiyendru01s-projects.vercel.app"
 ];
 
-// Apply middleware before routes
-app.use(cookieParser()); // Move cookieParser before CORS
+// Essential middleware setup
 app.use(express.json());
+app.use(cookieParser());
 
-app.use(
-  cors({
-    origin: function (origin, callback) {
-      // Allow requests with no origin (like mobile apps or curl requests)
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
-      }
-    },
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-  })
-);
+// Configure CORS with specific settings for iOS
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Cookie'],
+  exposedHeaders: ['set-cookie']
+}));
 
 // API routes
 app.use("/api/auth", authRoutes);
