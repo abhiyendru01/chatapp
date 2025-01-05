@@ -106,6 +106,14 @@ const LoginPage = () => {
             </p>
           </div>
         </div>
+      
+
+      {/* Footer */}
+      <div className="text-center mt-5 fixed bottom-0 left-0 right-0 p-4 bg-base-100 border-t border-base-100">
+        <p className="font-sans" style={{ color: "gray", fontSize: "12px" }}>
+          © created by abhiyendru{" "}
+        </p>
+      </div>
       </div>
 
       {/* Right Side - Image/Pattern */}
