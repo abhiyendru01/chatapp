@@ -9,11 +9,14 @@ const ChatHeader = () => {
   const { selectedUser, setSelectedUser } = useChatStore();
   const { onlineUsers } = useAuthStore();
 
-  const handleCall = () => {
-    if (selectedUser && selectedUser._id) {
-      console.log("Sending call event for user ID:", selectedUser._id);
-      socket.emit("call", selectedUser._id);  // Correct use of socket instance
-    }
+    const handleCall = () => {
+      if (selectedUser && selectedUser._id) {
+        console.log("Calling user:", selectedUser._id);
+        socket.emit("call", selectedUser._id); // Emit call event
+      } else {
+        console.log("No user selected for the call.");
+      }
+    
   };
 
   return (

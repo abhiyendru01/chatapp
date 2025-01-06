@@ -14,42 +14,43 @@ const PORT = process.env.PORT || 5001;
 const __dirname = path.resolve();
 
 const allowedOrigins = [
-  "http://localhost:5173", 
+  "http://localhost:5173",
   "https://chatapp003.vercel.app",
-  "https://fullstack-chat-4vla6v6q8-abhiyendru01s-projects.vercel.app"
+  "https://fullstack-chat-4vla6v6q8-abhiyendru01s-projects.vercel.app",
 ];
 
-// Essential middleware setup
+// Middleware setup
 app.use(express.json());
 app.use(cookieParser());
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization", "Cookie"],
+    exposedHeaders: ["set-cookie"],
+  })
+);
 
-// Configure CORS with specific settings for iOS
-app.use(cors({
-  origin: function (origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error("Not allowed by CORS"));
-    }
-  },
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'Cookie'],
-  exposedHeaders: ['set-cookie']
-}));
-
-// API routes
+// Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/messages", messageRoutes);
 
+// Serve frontend in production
 if (process.env.NODE_ENV === "production") {
   app.use(express.static(path.join(__dirname, "../frontend")));
-
   app.get("*", (req, res) => {
     res.sendFile(path.join(__dirname, "../frontend", "dist", "index.html"));
   });
 }
 
+// Start server
 server.listen(PORT, () => {
   console.log(`Server is running on PORT: ${PORT}`);
   connectDB();
