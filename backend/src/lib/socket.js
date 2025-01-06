@@ -56,5 +56,8 @@ io.on("connection", (socket) => {
 });
 
 // Export necessary modules
+export function getReceiverSocketId(userId) {
+  return userSocketMap[userId] || null;
+}
 export { app, server };
 export default io;
