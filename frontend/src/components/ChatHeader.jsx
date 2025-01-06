@@ -1,7 +1,7 @@
 import { X, Phone } from "lucide-react";
 import { useAuthStore } from "../store/useAuthStore";
 import { useChatStore } from "../store/useChatStore";
-import { io } from "socket.io-client";  // Ensure this import
+import { io } from "socket.io-client"; // Ensure this import
 
 const socket = io(); // Initialize the socket
 
@@ -9,14 +9,13 @@ const ChatHeader = () => {
   const { selectedUser, setSelectedUser } = useChatStore();
   const { onlineUsers } = useAuthStore();
 
-    const handleCall = () => {
-      if (selectedUser && selectedUser._id) {
-        console.log("Calling user:", selectedUser._id);
-        socket.emit("call", selectedUser._id); // Emit call event
-      } else {
-        console.log("No user selected for the call.");
-      }
-    
+  const handleCall = () => {
+    if (selectedUser && selectedUser._id) {
+      console.log("Calling user:", selectedUser._id);
+      socket.emit("call", selectedUser._id); // Emit call event
+    } else {
+      console.log("No user selected for the call.");
+    }
   };
 
   return (

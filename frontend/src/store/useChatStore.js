@@ -4,12 +4,18 @@ import { axiosInstance } from "../lib/axios";
 import { useAuthStore } from "./useAuthStore";
 
 export const useChatStore = create((set, get) => ({
+  contacts: [],
   messages: [],
   users: [],
   selectedUser: null,
   isUsersLoading: false,
   isMessagesLoading: false,
 
+  // Actions for adding and checking contacts
+  addContact: (userId) => set((state) => ({ contacts: [...state.contacts, userId] })),
+  isContact: (userId) => get().contacts.includes(userId),
+
+  // Fetch users
   getUsers: async () => {
     set({ isUsersLoading: true });
     try {
@@ -22,6 +28,7 @@ export const useChatStore = create((set, get) => ({
     }
   },
 
+  // Fetch messages for selected user
   getMessages: async (userId) => {
     set({ isMessagesLoading: true });
     try {
@@ -33,6 +40,8 @@ export const useChatStore = create((set, get) => ({
       set({ isMessagesLoading: false });
     }
   },
+
+  // Send a new message
   sendMessage: async (messageData) => {
     const { selectedUser, messages } = get();
     try {
@@ -43,6 +52,7 @@ export const useChatStore = create((set, get) => ({
     }
   },
 
+  // Subscribe to new messages via WebSocket
   subscribeToMessages: () => {
     const { selectedUser } = get();
     if (!selectedUser) return;
@@ -59,10 +69,14 @@ export const useChatStore = create((set, get) => ({
     });
   },
 
+  // Unsubscribe from new messages
   unsubscribeFromMessages: () => {
     const socket = useAuthStore.getState().socket;
     socket.off("newMessage");
   },
 
+  // Set the selected user for chat
   setSelectedUser: (selectedUser) => set({ selectedUser }),
+
 }));
+

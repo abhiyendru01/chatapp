@@ -1,19 +1,52 @@
-.chat-container {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    transition: all 0.3s ease-in-out;
-  }
-  
-  .chat-container.fullscreen {
+.fullscreen {
+    width: 100vw;
+    height: 100vh;
     position: fixed;
     top: 0;
     left: 0;
-    right: 0;
-    bottom: 0;
-    height: 100%;
-    max-height: none;
-    background-color: var(--background-color);
+    background-color: white;
     z-index: 1000;
+  }
+  
+  .chat-container.fullscreen .chat-header {
+    position: relative;
+    z-index: 2000;
+  }
+  
+  .chat-container.fullscreen .chat-bubble {
+    max-width: 90%;
+  }
+  
+  .chat-container.fullscreen .message-input {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+  }
+  .message-input-container {
+    display: flex;
+    align-items: center;
+    padding: 8px;
+    border-top: 1px solid var(--border-color);
+  }
+  
+  .input-bordered {
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+  }
+  
+  button {
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+  
+  button:hover {
+    opacity: 0.8;
+  }
+  
+  input[type="file"] {
+    display: none;
   }
   

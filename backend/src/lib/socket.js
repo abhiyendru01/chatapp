@@ -4,60 +4,76 @@ import express from "express";
 
 const app = express();
 const server = http.createServer(app);
-
-const io = new Server(server, {
-  cors: {
-    origin: ["http://localhost:5173", "https://chatapp003.vercel.app"],
-    methods: ["GET", "POST"],
-    credentials: true,
-  },
-  transports: ["websocket", "polling"], // Support fallback
-});
-
-// User-Socket mapping
-const userSocketMap = {}; // { userId: socketId }
-
 io.on("connection", (socket) => {
   console.log(`A user connected: ${socket.id}`);
-
-  // Extract userId from handshake query and store it
   const userId = socket.handshake.query.userId;
+
   if (userId) {
     userSocketMap[userId] = socket.id;
-    console.log(`User ${userId} mapped to socket ${socket.id}`);
   }
 
-  // Notify all users about online users
   io.emit("getOnlineUsers", Object.keys(userSocketMap));
 
-  // Handle "call" event
-  socket.on("call", ({ receiverId }) => {
-    const senderId = socket.handshake.query.userId;
-
-    console.log(`Call event: senderId=${senderId}, receiverId=${receiverId}`);
-    const receiverSocketId = userSocketMap[receiverId];
-
-    if (receiverSocketId) {
-      io.to(receiverSocketId).emit("incomingCall", { senderId });
-      console.log(`Incoming call sent to ${receiverId}`);
-    } else {
-      console.log(`Receiver ${receiverId} not online.`);
+  // Handle search user
+  socket.on("searchUser", async (username) => {
+    try {
+      const users = await User.find({ username: new RegExp(username, "i") });
+      socket.emit("searchResults", users);
+    } catch (error) {
+      console.error(error);
     }
   });
 
-  // Handle "disconnect"
-  socket.on("disconnect", (reason) => {
-    console.log(`A user disconnected: ${socket.id}, Reason: ${reason}`);
-    if (userId && userSocketMap[userId]) {
+  // Handle sending friend request
+  socket.on("sendFriendRequest", async ({ recipientId }) => {
+    const senderId = socket.handshake.query.userId;
+    if (senderId && recipientId) {
+      const recipient = await User.findById(recipientId);
+      if (recipient) {
+        recipient.friendRequests.push(senderId);
+        await recipient.save();
+        io.to(userSocketMap[recipientId]).emit("friendRequestReceived", senderId);
+      }
+    }
+  });
+
+  // Handle accepting friend requests
+  socket.on("acceptFriendRequest", async ({ senderId }) => {
+    const recipientId = socket.handshake.query.userId;
+    if (recipientId && senderId) {
+      const recipient = await User.findById(recipientId);
+      if (recipient) {
+        recipient.friends.push(senderId);
+        recipient.friendRequests = recipient.friendRequests.filter(id => id !== senderId);
+        await recipient.save();
+        io.to(userSocketMap[senderId]).emit("friendRequestAccepted", recipientId);
+      }
+    }
+  });
+
+  // Handle message sending
+  socket.on("sendMessage", ({ receiverId, message }) => {
+    const senderId = socket.handshake.query.userId;
+    if (receiverId && senderId) {
+      const receiverSocketId = userSocketMap[receiverId];
+      if (receiverSocketId) {
+        io.to(receiverSocketId).emit("incomingMessage", { senderId, message });
+      }
+    }
+  });
+
+  socket.on("disconnect", () => {
+    if (userId) {
       delete userSocketMap[userId];
       io.emit("getOnlineUsers", Object.keys(userSocketMap));
     }
   });
 });
 
-// Export necessary modules
-export function getReceiverSocketId(userId) {
-  return userSocketMap[userId] || null;
-}
-export { app, server };
-export default io;
+export const io = new Server(server, {
+  cors: {
+    origin: process.env.NODE_ENV === "production"
+      ? "https://fullstack-chat-4vla6v6q8-abhiyendru01s-projects.vercel.app"
+      : "http://localhost:5173",
+  },
+});
