@@ -1,0 +1,19 @@
+.chat-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    transition: all 0.3s ease-in-out;
+  }
+  
+  .chat-container.fullscreen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 100%;
+    max-height: none;
+    background-color: var(--background-color);
+    z-index: 1000;
+  }
+  
