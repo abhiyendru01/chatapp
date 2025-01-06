@@ -1,10 +1,11 @@
 import { THEMES } from "../constants";
 import { useThemeStore } from "../store/useThemeStore";
 import { Send } from "lucide-react";
+import { Image, Mic,} from "lucide-react";
 
 const PREVIEW_MESSAGES = [
-  { id: 1, content: "Hey! How's it going?", isSent: false },
-  { id: 2, content: "I'm doing great! Just working on some new features.", isSent: true },
+  { id: 1, content: "Hey! Welcome to Stardust", isSent: false },
+  { id: 2, content: "Hii, Its amazing ,I'm Exploring", isSent: true },
 ];
 
 const SettingsPage = () => {
@@ -54,12 +55,14 @@ const SettingsPage = () => {
                 <div className="px-4 py-3 border-b border-base-300 bg-base-100">
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-primary-content font-medium">
-                      J
+                      A
                     </div>
                     <div>
                       <h3 className="font-medium text-sm">Abhiyendru</h3>
                       <p className="text-xs text-base-content/70">Online</p>
+                      
                     </div>
+                  
                   </div>
                 </div>
 
@@ -91,20 +94,61 @@ const SettingsPage = () => {
                 </div>
 
                 {/* Chat Input */}
-                <div className="p-4 border-t border-base-300 bg-base-100">
-                  <div className="flex gap-2">
-                    <input
-                      type="text"
-                      className="input input-bordered flex-1 text-sm h-10"
-                      placeholder="Type a message..."
-                      value="This is a preview"
-                      readOnly
-                    />
-                    <button className="btn btn-primary h-10 min-h-0">
-                      <Send size={18} />
-                    </button>
-                  </div>
-                </div>
+                <div className="p-4 w-full bg-primarys backdrop-blur-md shadow-lg rounded-lg">
+      {  (
+        <div className="mb-3 flex items-center gap-2">
+          <div className="relative">
+           
+           
+          </div>
+        </div>
+      )}
+
+      <form  className="flex items-center gap-3">
+        
+        {/* Voice Note Button */}
+        <button
+          type="button"
+          className="btn btn-circle bg-base-100/80 hover:bg-base-200 text-base-content shadow-lg"
+        >
+          <Mic size={20} />
+        </button>
+
+        {/* Input Field */}
+        <div className="flex-1">
+          <input
+            type="text"
+            className="w-full input input-bordered bg-base-100/80 backdrop-blur-md text-base-content rounded-lg placeholder:text-base-content/70"
+            placeholder="Type a message..."
+            
+            
+          />
+        </div>
+
+        {/* Image Upload */}
+        <input
+          type="file"
+          accept="image/*"
+          className="hidden"
+          
+        />
+        <button
+          type="button"
+          className="btn btn-circle bg-base-100/60 hover:bg-base-200 text-base-content shadow-lg"
+        
+        >
+          <Image size={20} />
+        </button>
+        {/* Send Button */}
+        <button
+          type="submit"
+          className="btn btn-circle bg-base-100/60 hover:bg-base-200 text-base-content shadow-lg"
+        >
+          <Send size={20} />
+        </button>
+
+      </form>
+    </div>
               </div>
             </div>
           </div>

@@ -1,7 +1,7 @@
-import { X, Phone } from "lucide-react";
+import {   Phone } from "lucide-react";
 import { useAuthStore } from "../store/useAuthStore";
 import { useChatStore } from "../store/useChatStore";
-import { io } from "socket.io-client"; // Ensure this import
+import { io } from "socket.io-client";
 
 const socket = io(); // Initialize the socket
 
@@ -19,38 +19,33 @@ const ChatHeader = () => {
   };
 
   return (
-    <div className="p-2.5 border-b border-base-300">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          {/* Avatar */}
-          <div className="avatar">
-            <div className="size-10 rounded-full relative">
-              <img src={selectedUser.profilePic || "/avatar.png"} alt={selectedUser.fullName} />
-            </div>
-          </div>
+    <div className="p-2.5 border-b bg-primary/30 backdrop-blur-md">
+      <div className="flex items-center justify-between">   
+     <button
+          onClick={() => setSelectedUser(null)}
+          className="p-2 rounded-full hover:bg-gray-200"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-base-content/70" viewBox="0 0 20 20" fill="currentColor">
+            <path fillRule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 111.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clipRule="evenodd" />
+          </svg>
+        </button>
 
-          {/* User info */}
-          <div>
-            <h3 className="font-medium">{selectedUser.fullName}</h3>
-            <p className="text-sm text-base-content/70">
-              {onlineUsers.includes(selectedUser._id) ? "Online" : "Offline"}
-            </p>
-          </div>
+        {/* Centered User Info */}
+        <div className="flex flex-col items-center gap-1 text-center">
+          <h3 className="font-bold">{selectedUser.fullName}</h3>
+          <p className="text-sm text-base-content/70">
+            {onlineUsers.includes(selectedUser._id) ? "Online" : "Offline"}
+          </p>
         </div>
 
-        {/* Buttons */}
-        <div className="flex items-center gap-2">
-          {/* Call button */}
-          <button onClick={handleCall} className="flex items-center gap-2 px-3 py-2 rounded-lg border border-primary bg-primary/10 hover:bg-primary/20">
-            <Phone className="w-5 h-5 text-primary" />
-            <span className="text-primary font-medium">Call</span>
-          </button>
-
-          {/* Close button */}
-          <button onClick={() => setSelectedUser(null)} className="p-2 rounded-full hover:bg-gray-200">
-            <X className="w-5 h-5 text-base-content/70" />
-          </button>
-        </div>
+        {/* Call Button */}
+        <button
+          onClick={handleCall}
+          className="btn btn-rounded/lg bg-base-100/60 hover:bg-base-200 text-base-content shadow-lg"
+        >
+          <Phone className="w-4 h-5 primary" />
+          
+        </button>
       </div>
     </div>
   );
