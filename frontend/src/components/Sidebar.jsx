@@ -17,7 +17,7 @@ const Sidebar = () => {
     : users;
 
   return (
-    <aside className="h-full w-20 lg:w-72 border-r border-base-300 flex flex-col">
+    <aside className="h-full w-20 lg:w-72 border-r border-base-300  flex flex-col">
       <div className="border-b border-base-300 w-full p-5">
         <div className="flex items-center gap-2">
           <Users className="size-6" />
@@ -42,7 +42,7 @@ const Sidebar = () => {
           <button
             key={user._id}
             onClick={() => setSelectedUser(user)}
-            className={`w-full p-3 flex items-center gap-3 hover:bg-base-300 transition-colors ${selectedUser?._id === user._id ? "bg-base-300 ring-1 ring-base-300" : ""}`}
+            className={`w-full p-3 flex items-center gap-3 hover:bg-primary/10 transition-colors ${selectedUser?._id === user._id ? "bg-primary/10 ring-1 ring-base-300" : ""}`}
           >
             <div className="relative mx-auto lg:mx-0">
               <img
