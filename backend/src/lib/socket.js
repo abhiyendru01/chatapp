@@ -6,20 +6,6 @@ import User from "../models/user.model.js"; // Assuming you have this model file
 const app = express();
 const server = http.createServer(app);
 
-<<<<<<< HEAD
-// Initialize socket.io after creating the server
-const io = new Server(server, {
-  cors: {
-    origin: process.env.NODE_ENV === "production"
-      ? "https://fullstack-chat-4vla6v6q8-abhiyendru01s-projects.vercel.app"
-      : "http://localhost:5173",
-  },
-});
-
-// Define userSocketMap outside the socket connection
-const userSocketMap = {};
-
-=======
 // Initialize io after creating the server
 const io = new Server(server, {
   cors: {
@@ -33,7 +19,6 @@ const io = new Server(server, {
 let userSocketMap = {};
 
 // Connection event for new users
->>>>>>> 5c591c1cdcba97e3653479dd0014806ce428b267
 io.on("connection", (socket) => {
   console.log(`A user connected: ${socket.id}`);
   
@@ -62,7 +47,6 @@ io.on("connection", (socket) => {
     }
   });
 
-<<<<<<< HEAD
   // Handle message sending
   socket.on("sendMessage", ({ receiverId, message }) => {
     const senderId = socket.handshake.query.userId;
@@ -70,63 +54,6 @@ io.on("connection", (socket) => {
       const receiverSocketId = userSocketMap[receiverId];
       if (receiverSocketId) {
         io.to(receiverSocketId).emit("incomingMessage", { senderId, message });
-=======
-  // Handle sending a friend request
-  socket.on("sendFriendRequest", async ({ recipientId }) => {
-    const senderId = userId;
-    if (senderId && recipientId) {
-      try {
-        const recipient = await User.findById(recipientId);
-        if (recipient) {
-          recipient.friendRequests.push(senderId);
-          await recipient.save();
-          io.to(userSocketMap[recipientId]).emit("friendRequestReceived", senderId);
-        } else {
-          socket.emit("error", "Recipient not found");
-        }
-      } catch (error) {
-        console.error("Error in sendFriendRequest:", error);
-        socket.emit("error", "Error sending friend request");
-      }
-    }
-  });
-
-  // Handle accepting a friend request
-  socket.on("acceptFriendRequest", async ({ senderId }) => {
-    const recipientId = userId;
-    if (recipientId && senderId) {
-      try {
-        const recipient = await User.findById(recipientId);
-        if (recipient) {
-          recipient.friends.push(senderId);
-          recipient.friendRequests = recipient.friendRequests.filter(id => id !== senderId);
-          await recipient.save();
-          io.to(userSocketMap[senderId]).emit("friendRequestAccepted", recipientId);
-        } else {
-          socket.emit("error", "Recipient not found");
-        }
-      } catch (error) {
-        console.error("Error in acceptFriendRequest:", error);
-        socket.emit("error", "Error accepting friend request");
-      }
-    }
-  });
-
-  // Handle sending messages
-  socket.on("sendMessage", async ({ receiverId, message }) => {
-    const senderId = userId;
-    if (receiverId && senderId && message) {
-      try {
-        const receiverSocketId = userSocketMap[receiverId];
-        if (receiverSocketId) {
-          io.to(receiverSocketId).emit("incomingMessage", { senderId, message });
-        } else {
-          socket.emit("error", "Recipient not online");
-        }
-      } catch (error) {
-        console.error("Error in sendMessage:", error);
-        socket.emit("error", "Error sending message");
->>>>>>> 5c591c1cdcba97e3653479dd0014806ce428b267
       }
     }
   });
@@ -141,18 +68,9 @@ io.on("connection", (socket) => {
   });
 });
 
-<<<<<<< HEAD
-
-=======
-// Function to get the socket ID of a receiver (optional)
->>>>>>> 5c591c1cdcba97e3653479dd0014806ce428b267
 export function getReceiverSocketId(userSocketMap, receiverId) {
   return userSocketMap[receiverId] || null;
 }
 
 // Export app, server, and io for use in other parts of the application
-<<<<<<< HEAD
 export { app, server , io }; ;
-=======
-export { app, server, io };
->>>>>>> 5c591c1cdcba97e3653479dd0014806ce428b267
