@@ -69,20 +69,35 @@ const ChatContainer = ({ onBack }) => {
     message.senderId === authUser._id ? "bg-primary" : "bg-base-300"
   } p-4 rounded-lg shadow-lg transition duration-300 ease-in-out hover:shadow-xl`}
 >
-  {message.text && <p className="text-base-content">{message.text}</p>}
+  {message.text && (
+    <p
+      className={`${
+        message.senderId === authUser._id
+          ? "text-neutral-content"
+          : "text-base-content"
+      }`}
+    >
+      {message.text}
+    </p>
+  )}
   {message.image && (
     <img
       src={message.image}
       alt="Attachment"
       className="w-full mt-3 rounded-md shadow-md"
-    />  
+    />
   )}
-  <div className="chat-footer mt-1 text-xs opacity-50 text-base-content">
+  <div
+    className={`chat-footer mt-1 text-xs ${
+      message.senderId === authUser._id
+        ? "text-neutral-content/70"
+        : "text-base-content/60"
+    }`}
+  >
     <time className="text-[10px]">{formatMessageTime(message.createdAt)}</time>
   </div>
-</div >
-</div >
-
+</div>
+          </div>
         ))}
       </div>
       <MessageInput />
