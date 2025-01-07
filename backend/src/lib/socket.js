@@ -12,7 +12,7 @@ const io = new Server(server, {
     origin: process.env.NODE_ENV === "production"
       ? "https://chatapp003.vercel.app"
       : "http://localhost:5173", // Replace with your actual development URL
-    methods: ["GET", "POST"]
+    methods: ["GET", "POST"],
   },
 });
 
@@ -29,6 +29,8 @@ io.on("connection", (socket) => {
     userSocketMap[userId] = socket.id;
   } else {
     console.error("No userId provided in the socket handshake.");
+    socket.disconnect();
+    return; // Disconnect the socket if no userId is provided
   }
 
   // Notify all connected users of online users
