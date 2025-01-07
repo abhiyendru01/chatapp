@@ -1,23 +1,55 @@
 import { create } from "zustand";
 
-export const useThemeStore = create((set) => ({
-  theme: localStorage.getItem("chat-theme") || "Wireframe",
-  setTheme: (theme) => {
-    localStorage.setItem("chat-theme", theme);
-    set({ theme });
-  },
-}));
+// Theme color map for updating manifest.json
+const themeColorMap = {
+  light: "#ffffff",
+  dark: "#1d232a",
+  cupcake: "#faf7f5",
+  bumblebee: "#FFFFFF",
+  emerald: "#FFFFFF",
+  corporate: "#FFFFFF",
+  synthwave: "#09002f",
+  retro: "#ece3ca",
+  cyberpunk: "#fff248",
+  valentine: "#fcf2f8",
+  halloween: "#1b1816",
+  garden: "#e9e7e7",
+  forest: "#171212",
+  aqua: "#1a368b",
+  lofi: "#ffffff",
+  pastel: "#ffffff",
+  fantasy: "#ffffff",
+  wireframe: "#ffffff",
+  black: "#000000",
+  luxury: "#09090b",
+  dracula: "#282a36",
+  cmyk: "#ffffff",
+  autumn: "#F4F4F4",
+  business: "#202020",
+  acid: "#ffffff",
+  lemonade: "#f8fdef",
+  night: "#0f172a",
+  coffee: "#160d05",
+  winter: "#ffffff",
+  dim: "#2a303c",
+  nord: "#eceff4",
+  sunset: "#0b151b",
+};
+
+// Function to update manifest.json
 const updateManifestTheme = (theme) => {
+  const themeColor = themeColorMap[theme] || "#ffffff"; // Default to light theme if not found
   const manifest = {
     short_name: "Stardust",
     name: "Chat Application by Abhiyendru",
-    background_color: theme === "light" ? "#000000" : "#F4F4F4",
-    theme_color: theme === "dark" ? "#000000" : "#F4F4F4",
-    display: "standalone",
     icons: [
-      { src: "%PUBLIC_URL%/stardust_appicon.png", sizes: "192x192", type: "image/png" },
-      { src: "%PUBLIC_URL%/stardust_appicon.png", sizes: "512x512", type: "image/png" }
-    ]
+      { src: "/public/stardust_appicon.png", sizes: "192x192", type: "image/png" },
+      { src: "/public/stardust_appicon.png", sizes: "512x512", type: "image/png" },
+    ],
+    start_url: "/",
+    background_color: themeColor,
+    theme_color: themeColor,
+    display: "standalone",
   };
 
   const stringManifest = JSON.stringify(manifest);
@@ -26,4 +58,12 @@ const updateManifestTheme = (theme) => {
   document.querySelector('link[rel="manifest"]').setAttribute("href", manifestURL);
 };
 
-updateManifestTheme("light"); // Call this when you switch themes
+// Zustand store
+export const useThemeStore = create((set) => ({
+  theme: localStorage.getItem("chat-theme") || "wireframe",
+  setTheme: (theme) => {
+    localStorage.setItem("chat-theme", theme);
+    updateManifestTheme(theme); // Update manifest.json when the theme changes
+    set({ theme });
+  },
+}));
