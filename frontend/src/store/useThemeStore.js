@@ -36,7 +36,7 @@ const themeColorMap = {
   sunset: "#0b151b",
 };
 
-// Function to update manifest.json
+// Function to update manifest.json dynamically
 const updateManifestTheme = (theme) => {
   const themeColor = themeColorMap[theme] || "#ffffff"; // Default to light theme if not found
   const manifest = {
@@ -52,16 +52,17 @@ const updateManifestTheme = (theme) => {
     display: "standalone",
   };
 
-  // Dynamically update the manifest file
+  // Dynamically update the manifest file with a timestamp to avoid cache
   const stringManifest = JSON.stringify(manifest);
   const blob = new Blob([stringManifest], { type: "application/json" });
   const manifestURL = URL.createObjectURL(blob);
-  document.querySelector('link[rel="manifest"]').setAttribute("href", manifestURL);
+  const timestamp = new Date().getTime(); // Add timestamp for cache busting
+  document.querySelector('link[rel="manifest"]').setAttribute("href", `${manifestURL}?v=${timestamp}`);
 };
 
-// Zustand store
+// Zustand store for theme management
 export const useThemeStore = create((set) => ({
-  theme: localStorage.getItem("chat-theme") || "wireframe",
+  theme: localStorage.getItem("chat-theme") || "autumn",
   setTheme: (theme) => {
     localStorage.setItem("chat-theme", theme);
     updateManifestTheme(theme); // Update manifest.json when the theme changes
