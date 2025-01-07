@@ -11,8 +11,8 @@ const updateManifestTheme = (theme) => {
   const manifest = {
     short_name: "Stardust",
     name: "Chat Application by Abhiyendru",
-    background_color: theme === "light" ? "#000000" : "#ffffff",
-    theme_color: theme === "dark" ? "#000000" : "#ffffff",
+    background_color: theme === "light" ? "#000000" : "#F4F4F4",
+    theme_color: theme === "dark" ? "#000000" : "#F4F4F4",
     display: "standalone",
     icons: [
       { src: "%PUBLIC_URL%/stardust_appicon.png", sizes: "192x192", type: "image/png" },
