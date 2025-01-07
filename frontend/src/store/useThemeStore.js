@@ -38,7 +38,7 @@ const themeColorMap = {
 
 // Function to update manifest.json dynamically
 const updateManifestTheme = (theme) => {
-  const themeColor = themeColorMap[theme] || "#ffffff"; // Default to light theme if not found
+  const themeColor = themeColorMap[theme] ; // Default to light theme if not found
   const manifest = {
     short_name: "Stardust",
     name: "Chat Application by Abhiyendru",
