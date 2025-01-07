@@ -71,6 +71,90 @@ export const searchUser = async (req, res) => {
   }
 };
 
+<<<<<<< HEAD
+=======
+
+export const acceptFriendRequest = async (req, res) => {
+  try {
+    const { userId } = req.body;  // User who sent the friend request
+
+    const loggedInUserId = req.user._id;  // The logged-in user
+
+    if (!userId) {
+      return res.status(400).json({ error: "User ID is required." });
+    }
+
+    // Find the logged-in user and check if the userId exists in their friendRequests
+    const user = await User.findById(loggedInUserId);
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found." });
+    }
+
+    const friendRequestIndex = user.friendRequests.indexOf(userId);
+
+    if (friendRequestIndex === -1) {
+      return res.status(400).json({ error: "No friend request from this user." });
+    }
+
+    // Remove the userId from friendRequests
+    user.friendRequests.splice(friendRequestIndex, 1);
+
+    // Add the userId to friends list
+    user.friends.push(userId);
+
+    // Save the updated user data
+    await user.save();
+
+    // Find the requested user and add the logged-in user to their friends list
+    const requestedUser = await User.findById(userId);
+    if (!requestedUser) {
+      return res.status(404).json({ error: "Requested user not found." });
+    }
+
+    requestedUser.friends.push(loggedInUserId);
+    await requestedUser.save();
+
+    res.status(200).json({ message: "Friend request accepted successfully." });
+  } catch (error) {
+    console.error("Error in acceptFriendRequest:", error.message);
+    res.status(500).json({ error: "Unable to accept friend request." });
+  }
+};
+
+export const handleFriendRequest = async (req, res) => {
+  try {
+    const { userId } = req.body;  // The user who sent the friend request
+
+    const loggedInUserId = req.user._id;  // The logged-in user
+
+    if (!userId) {
+      return res.status(400).json({ error: "User ID is required." });
+    }
+
+    // Check if the user already has a friend request from the logged-in user
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ error: "Requested user not found." });
+    }
+
+    if (user.friendRequests.includes(loggedInUserId)) {
+      return res.status(400).json({ error: "Friend request already sent." });
+    }
+
+    // Add the logged-in user to the friend requests of the target user
+    user.friendRequests.push(loggedInUserId);
+    await user.save();
+
+    res.status(200).json({ message: "Friend request sent successfully." });
+  } catch (error) {
+    console.error("Error in handleFriendRequest:", error.message);
+    res.status(500).json({ error: "Unable to send friend request." });
+  }
+};
+
+>>>>>>> 5c591c1cdcba97e3653479dd0014806ce428b267
 export const sendMessage = async (req, res) => {
   try {
     const { text, image } = req.body;
