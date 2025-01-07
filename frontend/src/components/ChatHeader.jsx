@@ -19,7 +19,7 @@ const ChatHeader = () => {
   };
 
   return (
-    <div className="p-3.5 border-b border-base-300 backdrop-blur-md">
+    <div className="p-3.5 border-b bg-base-200 border-base-300 backdrop-blur-md">
       <div className="flex items-center justify-between">   
      <button
           onClick={() => setSelectedUser(null)}

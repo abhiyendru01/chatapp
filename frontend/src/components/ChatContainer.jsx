@@ -73,7 +73,7 @@ const ChatContainer = ({ onBack }) => {
     <p
       className={`${
         message.senderId === authUser._id
-          ? "text-neutral-content"
+          ? "text-primary-content"
           : "text-base-content"
       }`}
     >
@@ -90,7 +90,7 @@ const ChatContainer = ({ onBack }) => {
   <div
     className={`mt-1 text-xs ${
       message.senderId === authUser._id
-        ? "text-neutral-content/70"
+        ? "text-primary-content/70"
         : "text-base-content/60"
     }`}
   >
