@@ -86,7 +86,6 @@ io.on("connection", (socket) => {
 export function getReceiverSocketId(userSocketMap, receiverId) {
   return userSocketMap[receiverId] || null;
 }
-ss
 
 // Export the io instance and server for use in other parts of the application
 export { app, server, io };
