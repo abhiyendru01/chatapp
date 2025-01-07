@@ -39,6 +39,9 @@ const SignUpPage = () => {
       <div className="flex flex-col justify-center items-center p-6 sm:p-12">
         <div className="w-full max-w-md space-y-8">
           {/* LOGO */}
+
+          {/* Form Container */}
+          <div className="container mx-auto p-5 sm:p-8 bg-base-200/40 rounded-3xl shadow-md">
           <div className="text-center mb-8">
             <div className="flex flex-col items-center gap-2 group">
               <div
@@ -129,7 +132,7 @@ const SignUpPage = () => {
               )}
             </button>
           </form>
-
+<br />
           <div className="text-center">
             <p className="text-base-content/60">
               Already have an account?{" "}
@@ -138,6 +141,7 @@ const SignUpPage = () => {
               </Link>
             </p>
           </div>
+        </div>
         </div>
         {/* Footer */}
         <div className="text-center mt-5 fixed bottom-0 left-0 right-0 p-4 bg-base-100 border-t border-base-100">
