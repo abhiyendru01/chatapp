@@ -43,8 +43,8 @@ const updateManifestTheme = (theme) => {
     short_name: "Stardust",
     name: "Chat Application by Abhiyendru",
     icons: [
-      { src: "/public/stardust_appicon.png", sizes: "192x192", type: "image/png" },
-      { src: "/public/stardust_appicon.png", sizes: "512x512", type: "image/png" },
+      { src: "/stardust_appicon.png", sizes: "192x192", type: "image/png" },
+      { src: "/stardust_appicon.png", sizes: "512x512", type: "image/png" },
     ],
     start_url: "/",
     background_color: themeColor,
@@ -52,6 +52,7 @@ const updateManifestTheme = (theme) => {
     display: "standalone",
   };
 
+  // Dynamically update the manifest file
   const stringManifest = JSON.stringify(manifest);
   const blob = new Blob([stringManifest], { type: "application/json" });
   const manifestURL = URL.createObjectURL(blob);
