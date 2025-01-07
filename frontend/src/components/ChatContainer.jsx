@@ -43,7 +43,7 @@ const ChatContainer = ({ onBack }) => {
   return (
     <div className="flex-1 flex flex-col overflow-auto">
       <ChatHeader onBack={onBack} />
-      <div className="bg-primary/10 flex-1 overflow-y-auto p-4 space-y-4">
+      <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {messages.map((message) => (
           <div
             key={message._id}
@@ -62,10 +62,11 @@ const ChatContainer = ({ onBack }) => {
                 />
               </div>
             </div>
+            
             <div
               className={`chat-bubble ${
-                message.senderId === authUser._id ? "bg-primary/80" : "bg-primary/50"
-              } p-5 rounded-lg shadow-lg transition duration-300 ease-in-out hover:shadow-xl`}
+                message.senderId === authUser._id ? "bg-primary/100" : "bg-base-300"
+              } p-4 rounded-lg shadow-lg transition duration-300 ease-in-out hover:shadow-xl`}
             >
               {message.text && <p className="text-secondary-content">{message.text}</p>}
               {message.image && (
@@ -75,9 +76,7 @@ const ChatContainer = ({ onBack }) => {
                   className="w-full mt-3 rounded-md shadow-md"
                 />
               )}
-              <div className="chat-footer mt-2 text-xs opacity-50">
-                <time>{formatMessageTime(message.createdAt)}</time>
-              </div>
+             
             </div>
           </div>
         ))}

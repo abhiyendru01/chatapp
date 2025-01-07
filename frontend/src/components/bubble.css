@@ -1,0 +1,21 @@
+.sent {
+  background: linear-gradient(135deg, #fdc830, #f37335); /* Vibrant gradient */
+  color: white;
+}
+
+.received {
+  background: #f1f1f1; /* Neutral gray */
+  color: black;
+}
+
+.sent:hover,
+.received:hover {
+  box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.15);
+}
+
+.chat-bubble img {
+  max-width: 100%;
+  border-radius: 15px;
+  border: 2px solid rgba(255, 255, 255, 0.8);
+}
+
