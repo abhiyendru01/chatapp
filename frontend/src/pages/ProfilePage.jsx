@@ -110,7 +110,7 @@ const ProfilePage = () => {
                 />
               </label>
             </div>
-            <p className="text-sm text-zinc-400">
+            <p className="text-sm text-base-content/60">
               {isUpdatingProfile
                 ? "Uploading..."
                 : "Click the camera icon to update your photo"}
@@ -119,8 +119,8 @@ const ProfilePage = () => {
 
           {/* Name input */}
           <div className="space-y-1.5">
-            <div className="text-sm text-zinc-400 flex items-center gap-2">
-              <User className="w-4 h-4" />
+            <div className="text-sm text-base-content/60 flex items-center gap-2">
+              <User className="w-4 h-4 text-base-content/60" />
               Full Name
             </div>
             <input
@@ -133,8 +133,8 @@ const ProfilePage = () => {
           </div>
           <div className="space-y-6">
             <div className="space-y-1.5">
-              <div className="text-sm text-zinc-400 flex items-center gap-2">
-                <Mail className="w-4 h-4" />
+              <div className="text-sm text-base-content/60 flex items-center gap-2">
+                <Mail className="w-4 h-4 text-base-content/60" />
                 Email Address
               </div>
               <p className="px-4 py-2.5 bg-base-200 rounded-lg border">

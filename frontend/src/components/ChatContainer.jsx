@@ -65,9 +65,9 @@ const ChatContainer = ({ onBack }) => {
             </div>
             
             <div
-  className={`chat-bubble ${
-    message.senderId === authUser._id ? "bg-primary" : "bg-base-300"
-  } p-4 rounded-lg shadow-lg transition duration-300 ease-in-out hover:shadow-xl`}
+  className={`${
+    message.senderId === authUser._id ? "bg-primary" : "bg-base-300/100"
+  } p-4 rounded-lg shadow-lg transition duration-300 ease-in-out hover:shadow-xl w-max max-w-full`}
 >
   {message.text && (
     <p
@@ -88,7 +88,7 @@ const ChatContainer = ({ onBack }) => {
     />
   )}
   <div
-    className={`chat-footer mt-1 text-xs ${
+    className={`mt-1 text-xs ${
       message.senderId === authUser._id
         ? "text-neutral-content/70"
         : "text-base-content/60"
@@ -97,6 +97,7 @@ const ChatContainer = ({ onBack }) => {
     <time className="text-[10px]">{formatMessageTime(message.createdAt)}</time>
   </div>
 </div>
+
           </div>
         ))}
       </div>
