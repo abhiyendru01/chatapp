@@ -1,9 +1,22 @@
 import { Server } from "socket.io";
 import http from "http";
 import express from "express";
+import User from "../models/user.model.js"; // Assuming you have this model file
 
 const app = express();
 const server = http.createServer(app);
+
+// Initialize io after creating the server
+const io = new Server(server, {
+  cors: {
+    origin: process.env.NODE_ENV === "production"
+      ? "https://fullstack-chat-4vla6v6q8-abhiyendru01s-projects.vercel.app"
+      : "http://localhost:5173",
+  },
+});
+
+let userSocketMap = {};
+
 io.on("connection", (socket) => {
   console.log(`A user connected: ${socket.id}`);
   const userId = socket.handshake.query.userId;
@@ -70,10 +83,10 @@ io.on("connection", (socket) => {
   });
 });
 
-export const io = new Server(server, {
-  cors: {
-    origin: process.env.NODE_ENV === "production"
-      ? "https://fullstack-chat-4vla6v6q8-abhiyendru01s-projects.vercel.app"
-      : "http://localhost:5173",
-  },
-});
+export function getReceiverSocketId(userSocketMap, receiverId) {
+  return userSocketMap[receiverId] || null;
+}
+ss
+
+// Export the io instance and server for use in other parts of the application
+export { app, server, io };
