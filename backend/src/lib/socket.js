@@ -10,82 +10,114 @@ const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
     origin: process.env.NODE_ENV === "production"
-      ? "https://fullstack-chat-4vla6v6q8-abhiyendru01s-projects.vercel.app"
-      : "http://localhost:5173",
+      ? "https://chatapp003.vercel.app"
+      : "http://localhost:5173", // Replace with your actual development URL
+    methods: ["GET", "POST"]
   },
 });
 
 let userSocketMap = {};
 
+// Connection event for new users
 io.on("connection", (socket) => {
   console.log(`A user connected: ${socket.id}`);
-  const userId = socket.handshake.query.userId;
-
+  
+  const userId = socket.handshake.query.userId; // Retrieve userId from handshake query
+  
+  // Check if userId is available before continuing
   if (userId) {
     userSocketMap[userId] = socket.id;
+  } else {
+    console.error("No userId provided in the socket handshake.");
   }
 
+  // Notify all connected users of online users
   io.emit("getOnlineUsers", Object.keys(userSocketMap));
 
-  // Handle search user
+  // Handle user search event
   socket.on("searchUser", async (username) => {
     try {
       const users = await User.find({ username: new RegExp(username, "i") });
       socket.emit("searchResults", users);
     } catch (error) {
-      console.error(error);
+      console.error("Error in searchUser:", error);
+      socket.emit("error", "Error fetching users");
     }
   });
 
-  // Handle sending friend request
+  // Handle sending a friend request
   socket.on("sendFriendRequest", async ({ recipientId }) => {
-    const senderId = socket.handshake.query.userId;
+    const senderId = userId;
     if (senderId && recipientId) {
-      const recipient = await User.findById(recipientId);
-      if (recipient) {
-        recipient.friendRequests.push(senderId);
-        await recipient.save();
-        io.to(userSocketMap[recipientId]).emit("friendRequestReceived", senderId);
+      try {
+        const recipient = await User.findById(recipientId);
+        if (recipient) {
+          recipient.friendRequests.push(senderId);
+          await recipient.save();
+          io.to(userSocketMap[recipientId]).emit("friendRequestReceived", senderId);
+        } else {
+          socket.emit("error", "Recipient not found");
+        }
+      } catch (error) {
+        console.error("Error in sendFriendRequest:", error);
+        socket.emit("error", "Error sending friend request");
       }
     }
   });
 
-  // Handle accepting friend requests
+  // Handle accepting a friend request
   socket.on("acceptFriendRequest", async ({ senderId }) => {
-    const recipientId = socket.handshake.query.userId;
+    const recipientId = userId;
     if (recipientId && senderId) {
-      const recipient = await User.findById(recipientId);
-      if (recipient) {
-        recipient.friends.push(senderId);
-        recipient.friendRequests = recipient.friendRequests.filter(id => id !== senderId);
-        await recipient.save();
-        io.to(userSocketMap[senderId]).emit("friendRequestAccepted", recipientId);
+      try {
+        const recipient = await User.findById(recipientId);
+        if (recipient) {
+          recipient.friends.push(senderId);
+          recipient.friendRequests = recipient.friendRequests.filter(id => id !== senderId);
+          await recipient.save();
+          io.to(userSocketMap[senderId]).emit("friendRequestAccepted", recipientId);
+        } else {
+          socket.emit("error", "Recipient not found");
+        }
+      } catch (error) {
+        console.error("Error in acceptFriendRequest:", error);
+        socket.emit("error", "Error accepting friend request");
       }
     }
   });
 
-  // Handle message sending
-  socket.on("sendMessage", ({ receiverId, message }) => {
-    const senderId = socket.handshake.query.userId;
-    if (receiverId && senderId) {
-      const receiverSocketId = userSocketMap[receiverId];
-      if (receiverSocketId) {
-        io.to(receiverSocketId).emit("incomingMessage", { senderId, message });
+  // Handle sending messages
+  socket.on("sendMessage", async ({ receiverId, message }) => {
+    const senderId = userId;
+    if (receiverId && senderId && message) {
+      try {
+        const receiverSocketId = userSocketMap[receiverId];
+        if (receiverSocketId) {
+          io.to(receiverSocketId).emit("incomingMessage", { senderId, message });
+        } else {
+          socket.emit("error", "Recipient not online");
+        }
+      } catch (error) {
+        console.error("Error in sendMessage:", error);
+        socket.emit("error", "Error sending message");
       }
     }
   });
 
+  // Handle user disconnecting
   socket.on("disconnect", () => {
     if (userId) {
       delete userSocketMap[userId];
       io.emit("getOnlineUsers", Object.keys(userSocketMap));
+      console.log(`User disconnected: ${socket.id}`);
     }
   });
 });
 
+// Function to get the socket ID of a receiver (optional)
 export function getReceiverSocketId(userSocketMap, receiverId) {
   return userSocketMap[receiverId] || null;
 }
 
-// Export the io instance and server for use in other parts of the application
+// Export app, server, and io for use in other parts of the application
 export { app, server, io };
