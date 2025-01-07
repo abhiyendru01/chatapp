@@ -1,9 +1,10 @@
 import daisyui from "daisyui";
+import "./index.css";
 
 
 /** @type {import('tailwindcss').Config} */
 export default {
-  content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
+  content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}","./index.css"],
   theme: {
     extend: {},
   },
@@ -40,6 +41,7 @@ export default {
       "coffee",
       "winter",
       "dim",
+      "frost",
       "nord",
       "sunset",
     ],

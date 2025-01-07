@@ -19,7 +19,7 @@ const ChatHeader = () => {
   };
 
   return (
-    <div className="p-2.5 border-b border-base-300  backdrop-blur-md">
+    <div className="p-3.5 border-b border-base-300 backdrop-blur-md">
       <div className="flex items-center justify-between">   
      <button
           onClick={() => setSelectedUser(null)}
@@ -41,7 +41,7 @@ const ChatHeader = () => {
         {/* Call Button */}
         <button
           onClick={handleCall}
-          className="rounded-lg px-4 py-2 bg-base-100/30 hover:bg-base-200 text-base-content shadow-lg"
+          className="rounded-lg px-4 py-3 bg-base-300/55 hover:bg-base-200 text-base-content "
         >
           <Phone className="w-4 h-5 primary" />
         </button>

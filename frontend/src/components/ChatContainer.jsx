@@ -4,6 +4,7 @@ import { useAuthStore } from "../store/useAuthStore";
 import { formatMessageTime } from "../lib/utils";
 import ChatHeader from "./ChatHeader";
 import MessageInput from "./MessageInput";
+import './bubble.css';
 import MessageSkeleton from "./skeletons/MessageSkeleton";
 
 const ChatContainer = ({ onBack }) => {
@@ -64,21 +65,24 @@ const ChatContainer = ({ onBack }) => {
             </div>
             
             <div
-              className={`chat-bubble ${
-                message.senderId === authUser._id ? "bg-primary/100" : "bg-base-300"
-              } p-4 rounded-lg shadow-lg transition duration-300 ease-in-out hover:shadow-xl`}
-            >
-              {message.text && <p className="text-secondary-content">{message.text}</p>}
-              {message.image && (
-                <img
-                  src={message.image}
-                  alt="Attachment"
-                  className="w-full mt-3 rounded-md shadow-md"
-                />
-              )}
-             
-            </div>
-          </div>
+  className={`chat-bubble ${
+    message.senderId === authUser._id ? "bg-primary" : "bg-base-300"
+  } p-4 rounded-lg shadow-lg transition duration-300 ease-in-out hover:shadow-xl`}
+>
+  {message.text && <p className="text-base-content">{message.text}</p>}
+  {message.image && (
+    <img
+      src={message.image}
+      alt="Attachment"
+      className="w-full mt-3 rounded-md shadow-md"
+    />  
+  )}
+  <div className="chat-footer mt-1 text-xs opacity-50 text-base-content">
+    <time className="text-[10px]">{formatMessageTime(message.createdAt)}</time>
+  </div>
+</div >
+</div >
+
         ))}
       </div>
       <MessageInput />
