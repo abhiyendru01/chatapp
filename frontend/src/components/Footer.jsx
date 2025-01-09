@@ -3,7 +3,7 @@ import'react';
 const Footer = () => {
   return (
     <div className="flex justify-center items-center relative transition-all duration-[450ms] ease-in-out w-full p-4">
-      <div className="border border-primary-60 w-full ease-in-out duration-500 left-0 rounded-2xl flex shadow-lg bg-primary/25">
+      <div className="border border-primary-60 w-full ease-in-out duration-500 left-0 rounded-2xl flex shadow-lg bg-primary/25 backdrop-blur-md">
         <label
           className="relative w-full h-16 p-4 ease-in-out duration-300 border-solid  group flex flex-row gap-3 items-center justify-center text-base-300 rounded-xl cursor-pointer"
           htmlFor="dashboard"
