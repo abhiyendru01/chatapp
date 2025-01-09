@@ -19,11 +19,11 @@ const ChatHeader = () => {
   };
 
   return (
-    <div className="p-3.5 border-b bg-base-200 border-base-300 backdrop-blur-md">
+    <div className="p-3.5 border-b bg-base-200 border-base-300 backdrop-blur-md ">
       <div className="flex items-center justify-between">   
      <button
           onClick={() => setSelectedUser(null)}
-          className="p-2 rounded-full hover:bg-gray-200"
+          className="p-2 rounded-3xl hover:bg-base-300"
         >
           <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-base-content/70" viewBox="0 0 20 20" fill="currentColor">
             <path fillRule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 111.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clipRule="evenodd" />
@@ -41,7 +41,7 @@ const ChatHeader = () => {
         {/* Call Button */}
         <button
           onClick={handleCall}
-          className="rounded-lg px-4 py-3 bg-base-300/55 hover:bg-base-200 text-base-content "
+          className="rounded-lg px-4 py-3 bg-base-300/55 hover:bg-base-300 text-base-content "
         >
           <Phone className="w-4 h-5 primary" />
         </button>

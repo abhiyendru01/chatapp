@@ -24,28 +24,16 @@ io.on("connection", (socket) => {
   
   const userId = socket.handshake.query.userId; // Retrieve userId from handshake query
   
-  // Check if userId is available before continuing
   if (userId) {
     userSocketMap[userId] = socket.id;
   } else {
     console.error("No userId provided in the socket handshake.");
     socket.disconnect();
-    return; // Disconnect the socket if no userId is provided
+    return; // Disconnect if no userId
   }
 
   // Notify all connected users of online users
   io.emit("getOnlineUsers", Object.keys(userSocketMap));
-
-  // Handle user search event
-  socket.on("searchUser", async (username) => {
-    try {
-      const users = await User.find({ username: new RegExp(username, "i") });
-      socket.emit("searchResults", users);
-    } catch (error) {
-      console.error("Error in searchUser:", error);
-      socket.emit("error", "Error fetching users");
-    }
-  });
 
   // Handle message sending
   socket.on("sendMessage", ({ receiverId, message }) => {
@@ -55,6 +43,30 @@ io.on("connection", (socket) => {
       if (receiverSocketId) {
         io.to(receiverSocketId).emit("incomingMessage", { senderId, message });
       }
+    }
+  });
+
+  // Handle sending a friend request
+  socket.on("sendFriendRequest", ({ senderId, receiverId }) => {
+    const receiverSocketId = userSocketMap[receiverId];
+    if (receiverSocketId) {
+      io.to(receiverSocketId).emit("friendRequestReceived", { senderId });
+    }
+  });
+
+  // Handle accepting a friend request
+  socket.on("acceptFriendRequest", ({ senderId, receiverId }) => {
+    const senderSocketId = userSocketMap[senderId];
+    if (senderSocketId) {
+      io.to(senderSocketId).emit("friendRequestAccepted", { receiverId });
+    }
+  });
+
+  // Handle rejecting a friend request
+  socket.on("rejectFriendRequest", ({ senderId, receiverId }) => {
+    const senderSocketId = userSocketMap[senderId];
+    if (senderSocketId) {
+      io.to(senderSocketId).emit("friendRequestRejected", { receiverId });
     }
   });
 
@@ -73,4 +85,4 @@ export function getReceiverSocketId(userSocketMap, receiverId) {
 }
 
 // Export app, server, and io for use in other parts of the application
-export { app, server , io }; ;
+export { app, server, io };

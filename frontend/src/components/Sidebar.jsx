@@ -7,24 +7,31 @@ const Sidebar = () => {
   const { getUsers, users, selectedUser, setSelectedUser } = useChatStore();
   const { onlineUsers } = useAuthStore();
   const [showOnlineOnly, setShowOnlineOnly] = useState(false);
+  const [searchQuery, setSearchQuery] = useState(""); // State to store search query
 
   useEffect(() => {
     getUsers();
   }, [getUsers]);
 
-  const filteredUsers = showOnlineOnly
-    ? users.filter((user) => onlineUsers.includes(user._id))
-    : users;
+  // Filter users based on online status and search query
+  const filteredUsers = users.filter((user) => {
+    const matchesOnlineStatus =
+      !showOnlineOnly || onlineUsers.includes(user._id);
+    const matchesSearchQuery =
+      user.fullName.toLowerCase().includes(searchQuery.toLowerCase());
+
+    return matchesOnlineStatus && matchesSearchQuery;
+  });
 
   return (
-    <aside className="h-full w-20 lg:w-72 border-r border-base-300  flex flex-col">
+    <aside className="h-full w-full lg:w-72 border-r border-base-300 bg-base-100 flex flex-col">
       <div className="border-b border-base-300 w-full p-5">
         <div className="flex items-center gap-2">
           <Users className="size-6" />
           <span className="font-medium hidden lg:block">Contacts</span>
         </div>
         <div className="mt-3 hidden lg:flex items-center gap-2">
-          <label className="cursor-pointer flex items-center gap-2">
+          <label className="cursor-pointer  flex items-center gap-2">
             <input
               type="checkbox"
               checked={showOnlineOnly}
@@ -37,12 +44,41 @@ const Sidebar = () => {
         </div>
       </div>
 
-      <div className="overflow-y-auto w-full py-3">
+      {/* Search Bar */}
+      <div className="w-full p-5 lg:px-3 lg:py-3">
+        <label className="input p-5 md:p-3 bg-base-200 input-bordered border-2 px-5 py-5 flex items-center gap-2 w-full">
+          <input
+            type="text"
+            className="grow"
+            placeholder="Search"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 16 16"
+            fill="currentColor"
+            className="h-4 w-4 opacity-70"
+          >
+            <path
+              fillRule="evenodd"
+              d="M9.965 11.026a5 5 0 1 1 1.06-1.06l2.755 2.754a.75.75 0 1 1-1.06 1.06l-2.755-2.754ZM10.5 7a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z"
+              clipRule="evenodd"
+            />
+          </svg>
+        </label>
+      </div>
+
+      {/* Users List */}
+      <div className="overflow-y-auto w-full py-3 px-3 flex-grow space-y-3">
+        {/* Display filtered users */}
         {filteredUsers.map((user) => (
           <button
             key={user._id}
             onClick={() => setSelectedUser(user)}
-            className={`w-full p-3 flex items-center gap-3 hover:bg-base-300/ transition-colors ${selectedUser?._id === user._id ? "bg-primary/10 ring-1 ring-base-300" : ""}`}
+            className={`w-full p-8  lg:p-3 flex items-center gap-3 hover:bg-base-300/30 rounded-3xl border-4 border-spacing-2 border-base-300 border-collapse transition-colors ${
+              selectedUser?._id === user._id ? "bg-primary/10 ring-1 ring-base-300" : ""
+            }`}
           >
             <div className="relative mx-auto lg:mx-0">
               <img
@@ -55,15 +91,22 @@ const Sidebar = () => {
               )}
             </div>
 
-            <div className="hidden lg:block text-left min-w-0">
-              <div className="font-medium truncate">{user.fullName}</div>
-              <div className="text-sm text-zinc-400">
+           
+            <div className="hidden lg:block text-left truncate">
+              <div className="font-2xl font-semibold">{user.fullName}</div>
+              <div className="text-base text-zinc-400 md:visible">
                 {onlineUsers.includes(user._id) ? "Online" : "Offline"}
               </div>
+            </div>
+
+           
+            <div className="lg:hidden flex-grow text-left truncate">
+              <div className="font-semibold">{user.fullName}</div>
             </div>
           </button>
         ))}
 
+        {/* No users found message */}
         {filteredUsers.length === 0 && (
           <div className="text-center text-zinc-500 py-4">No online users</div>
         )}
