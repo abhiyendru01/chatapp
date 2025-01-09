@@ -3,12 +3,12 @@ import'react';
 const Footer = () => {
   return (
     <div className="flex justify-center items-center relative transition-all duration-[450ms] ease-in-out w-full p-4">
-      <div className="border border-solid border-base-300 w-full ease-in-out duration-500 left-0 rounded-2xl flex shadow-lg bg-base-100">
+      <div className="border border-primary-60 w-full ease-in-out duration-500 left-0 rounded-2xl flex shadow-lg bg-primary/25">
         <label
-          className="relative w-full h-16 p-4 ease-in-out duration-300 border-solid border-base-300 group flex flex-row gap-3 items-center justify-center text-base-300 rounded-xl cursor-pointer"
+          className="relative w-full h-16 p-4 ease-in-out duration-300 border-solid  group flex flex-row gap-3 items-center justify-center text-base-300 rounded-xl cursor-pointer"
           htmlFor="dashboard"
         >
-          <input id="dashboard" name="path" type="radio" className="hidden peer" />
+          <input id="dashboard" name="path" type="radio" className="hidden peer text-base-content" />
           <svg
             viewBox="0 0 24 24"
             height="24"
@@ -20,7 +20,7 @@ const Footer = () => {
           </svg>
         </label>
         <label
-          className="relative w-full h-16 p-4 ease-in-out duration-300 border-solid border-base-300 group flex flex-row gap-3 items-center justify-center text-base-content rounded-xl cursor-pointer"
+          className="relative w-full h-16 p-4 ease-in-out duration-300 border-solid group flex flex-row gap-3 items-center justify-center text-base-content rounded-xl cursor-pointer"
           htmlFor="profile"
         >
           <input id="profile" name="path" type="radio" className="hidden peer" />

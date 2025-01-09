@@ -31,7 +31,7 @@ const Sidebar = () => {
 
   return (
     <aside className="h-full w-full lg:w-72 border-r border-base-300 bg-base-100 flex flex-col">
-      <div className="border-b border-base-300 w-full p-5">
+      <div className="border-b-2 rounded-b-3xl border-primary/40 w-full p-5 bg-primary/20 backdrop-blur">
         <div className="flex items-center gap-2">
           <Users className="size-6" />
           <span className="font-medium hidden lg:block">Contacts</span>
@@ -50,15 +50,12 @@ const Sidebar = () => {
             ({onlineUsers.length - 1} online)
           </span>
         </div>
-      </div>
-
-      {/* Search Bar */}
-      <div className="w-full p-5 lg:px-3 lg:py-3">
-        <label className="input p-5 md:p-3 bg-base-200 input-bordered border-2 px-5 py-5 flex items-center gap-2 w-full">
+        <div className="w-full p-3 lg:px-3 lg:py-2">
+        <label className="input p-5 md:p-3  input-bordered input-md border-primary/71 border-4 rounded-2xl px-5 py-5 flex items-center gap-2 w-full backdrop-blur-sm">
           <input
             type="text"
-            className="grow"
-            placeholder="Search"
+            className="grow placeholder:text-base-content"
+            placeholder="Search..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
@@ -76,15 +73,19 @@ const Sidebar = () => {
           </svg>
         </label>
       </div>
+      </div>
+
+      {/* Search Bar */}
+     
 
       {/* Users List */}
-      <div className="overflow-y-auto w-full py-3 px-3 flex-grow space-y-3">
+      <div className="overflow-y-auto w-full py-3 px-3 flex-grow space-y-1">
         {/* Display filtered users */}
         {sortedAndFilteredUsers.map((user) => (
           <button
             key={user._id}
             onClick={() => setSelectedUser(user)}
-            className={`w-full p-8  lg:p-3 flex items-center gap-3 hover:bg-base-300/30 rounded-3xl border-4 border-spacing-2 border-base-300 border-collapse transition-colors ${
+            className={`w-full p-6  lg:p-3 flex items-center gap-3 bg-primary/10 hover:bg-primary/10  hover:border-primary/40 backdrop-blur-sm rounded-3xl border-2 border-spacing-0.5 border-primary/25  transition-colors ${
               selectedUser?._id === user._id
                 ? "bg-primary/10 ring-1 ring-base-300"
                 : ""
