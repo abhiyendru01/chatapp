@@ -46,29 +46,6 @@ io.on("connection", (socket) => {
     }
   });
 
-  // Handle sending a friend request
-  socket.on("sendFriendRequest", ({ senderId, receiverId }) => {
-    const receiverSocketId = userSocketMap[receiverId];
-    if (receiverSocketId) {
-      io.to(receiverSocketId).emit("friendRequestReceived", { senderId });
-    }
-  });
-
-  // Handle accepting a friend request
-  socket.on("acceptFriendRequest", ({ senderId, receiverId }) => {
-    const senderSocketId = userSocketMap[senderId];
-    if (senderSocketId) {
-      io.to(senderSocketId).emit("friendRequestAccepted", { receiverId });
-    }
-  });
-
-  // Handle rejecting a friend request
-  socket.on("rejectFriendRequest", ({ senderId, receiverId }) => {
-    const senderSocketId = userSocketMap[senderId];
-    if (senderSocketId) {
-      io.to(senderSocketId).emit("friendRequestRejected", { receiverId });
-    }
-  });
 
   // Handle user disconnecting
   socket.on("disconnect", () => {

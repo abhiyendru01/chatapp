@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import path from "path";
+import helmet from "helmet"; // Add helmet
 import { connectDB } from "./lib/db.js";
 import authRoutes from "./routes/auth.route.js";
 import messageRoutes from "./routes/message.route.js";
@@ -22,6 +23,8 @@ const allowedOrigins = [
 // Middleware setup
 app.use(express.json());
 app.use(cookieParser());
+
+// Add CORS
 app.use(
   cors({
     origin: function (origin, callback) {
@@ -35,6 +38,38 @@ app.use(
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization", "Cookie"],
     exposedHeaders: ["set-cookie"],
+  })
+);
+
+// Add Helmet for Security
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: [
+          "'self'",
+          "'unsafe-inline'", // Allows inline scripts; remove if not necessary
+          "https://chatapp003.vercel.app",
+          "https://fullstack-chat-4vla6v6q8-abhiyendru01s-projects.vercel.app",
+        ],
+        styleSrc: [
+          "'self'",
+          "'unsafe-inline'", // Allows inline styles; remove if not necessary
+          "https://fonts.googleapis.com",
+        ],
+        fontSrc: ["'self'", "https://fonts.gstatic.com"],
+        imgSrc: ["'self'", "data:"],
+        connectSrc: [
+          "'self'",
+          "http://localhost:5173",
+          "https://chatapp003.vercel.app",
+          "https://fullstack-chat-4vla6v6q8-abhiyendru01s-projects.vercel.app",
+        ],
+        objectSrc: ["'none'"],
+        frameSrc: ["'none'"],
+      },
+    },
   })
 );
 
