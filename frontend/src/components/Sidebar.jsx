@@ -13,15 +13,21 @@ const Sidebar = () => {
     getUsers();
   }, [getUsers]);
 
-  // Filter users based on online status and search query
-  const filteredUsers = users.filter((user) => {
-    const matchesOnlineStatus =
-      !showOnlineOnly || onlineUsers.includes(user._id);
-    const matchesSearchQuery =
-      user.fullName.toLowerCase().includes(searchQuery.toLowerCase());
-
-    return matchesOnlineStatus && matchesSearchQuery;
-  });
+  // Sort and filter users
+  const sortedAndFilteredUsers = users
+    .sort((a, b) => {
+      const timeA = new Date(a.lastInteraction).getTime();
+      const timeB = new Date(b.lastInteraction).getTime();
+      return timeB - timeA; // Sort descending by lastInteraction
+    })
+    .filter((user) => {
+      const matchesOnlineStatus =
+        !showOnlineOnly || onlineUsers.includes(user._id);
+      const matchesSearchQuery = user.fullName
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase());
+      return matchesOnlineStatus && matchesSearchQuery;
+    });
 
   return (
     <aside className="h-full w-full lg:w-72 border-r border-base-300 bg-base-100 flex flex-col">
@@ -31,7 +37,7 @@ const Sidebar = () => {
           <span className="font-medium hidden lg:block">Contacts</span>
         </div>
         <div className="mt-3 hidden lg:flex items-center gap-2">
-          <label className="cursor-pointer  flex items-center gap-2">
+          <label className="cursor-pointer flex items-center gap-2">
             <input
               type="checkbox"
               checked={showOnlineOnly}
@@ -40,7 +46,9 @@ const Sidebar = () => {
             />
             <span className="text-sm">Show online only</span>
           </label>
-          <span className="text-xs text-zinc-500">({onlineUsers.length - 1} online)</span>
+          <span className="text-xs text-zinc-500">
+            ({onlineUsers.length - 1} online)
+          </span>
         </div>
       </div>
 
@@ -72,12 +80,14 @@ const Sidebar = () => {
       {/* Users List */}
       <div className="overflow-y-auto w-full py-3 px-3 flex-grow space-y-3">
         {/* Display filtered users */}
-        {filteredUsers.map((user) => (
+        {sortedAndFilteredUsers.map((user) => (
           <button
             key={user._id}
             onClick={() => setSelectedUser(user)}
             className={`w-full p-8  lg:p-3 flex items-center gap-3 hover:bg-base-300/30 rounded-3xl border-4 border-spacing-2 border-base-300 border-collapse transition-colors ${
-              selectedUser?._id === user._id ? "bg-primary/10 ring-1 ring-base-300" : ""
+              selectedUser?._id === user._id
+                ? "bg-primary/10 ring-1 ring-base-300"
+                : ""
             }`}
           >
             <div className="relative mx-auto lg:mx-0">
@@ -91,7 +101,6 @@ const Sidebar = () => {
               )}
             </div>
 
-           
             <div className="hidden lg:block text-left truncate">
               <div className="font-2xl font-semibold">{user.fullName}</div>
               <div className="text-base text-zinc-400 md:visible">
@@ -99,7 +108,6 @@ const Sidebar = () => {
               </div>
             </div>
 
-           
             <div className="lg:hidden flex-grow text-left truncate">
               <div className="font-semibold">{user.fullName}</div>
             </div>
@@ -107,8 +115,8 @@ const Sidebar = () => {
         ))}
 
         {/* No users found message */}
-        {filteredUsers.length === 0 && (
-          <div className="text-center text-zinc-500 py-4">No online users</div>
+        {sortedAndFilteredUsers.length === 0 && (
+          <div className="text-center text-zinc-500 py-4">No users found</div>
         )}
       </div>
     </aside>

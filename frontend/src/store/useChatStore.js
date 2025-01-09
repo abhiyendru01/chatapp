@@ -6,21 +6,23 @@ import { useAuthStore } from "./useAuthStore";
 export const useChatStore = create((set, get) => ({
   contacts: [],
   messages: [],
-  users: [],
+  users: [], // This should now include a `lastMessagedAt` field for each user
   selectedUser: null,
   isUsersLoading: false,
   isMessagesLoading: false,
 
-  // Actions for adding and checking contacts
   addContact: (userId) => set((state) => ({ contacts: [...state.contacts, userId] })),
   isContact: (userId) => get().contacts.includes(userId),
 
-  // Fetch users
   getUsers: async () => {
     set({ isUsersLoading: true });
     try {
       const res = await axiosInstance.get("/messages/users");
-      set({ users: res.data });
+      const usersWithTimestamp = res.data.map((user) => ({
+        ...user,
+        lastMessagedAt: user.lastMessagedAt || null, // Default to null if not provided
+      }));
+      set({ users: usersWithTimestamp });
     } catch (error) {
       toast.error(error.response.data.message);
     } finally {
@@ -28,12 +30,17 @@ export const useChatStore = create((set, get) => ({
     }
   },
 
-  // Fetch messages for selected user
   getMessages: async (userId) => {
     set({ isMessagesLoading: true });
     try {
       const res = await axiosInstance.get(`/messages/${userId}`);
       set({ messages: res.data });
+
+      // Update lastMessagedAt for this user
+      const updatedUsers = get().users.map((user) =>
+        user._id === userId ? { ...user, lastMessagedAt: new Date().toISOString() } : user
+      );
+      set({ users: updatedUsers });
     } catch (error) {
       toast.error(error.response.data.message);
     } finally {
@@ -41,18 +48,22 @@ export const useChatStore = create((set, get) => ({
     }
   },
 
-  // Send a new message
   sendMessage: async (messageData) => {
-    const { selectedUser, messages } = get();
+    const { selectedUser, messages, users } = get();
     try {
       const res = await axiosInstance.post(`/messages/send/${selectedUser._id}`, messageData);
       set({ messages: [...messages, res.data] });
+
+      // Update lastMessagedAt for the recipient
+      const updatedUsers = users.map((user) =>
+        user._id === selectedUser._id ? { ...user, lastMessagedAt: new Date().toISOString() } : user
+      );
+      set({ users: updatedUsers });
     } catch (error) {
       toast.error(error.response.data.message);
     }
   },
 
-  // Subscribe to new messages via WebSocket
   subscribeToMessages: () => {
     const { selectedUser } = get();
     if (!selectedUser) return;
@@ -66,17 +77,19 @@ export const useChatStore = create((set, get) => ({
       set({
         messages: [...get().messages, newMessage],
       });
+
+      // Update lastMessagedAt for the sender
+      const updatedUsers = get().users.map((user) =>
+        user._id === newMessage.senderId ? { ...user, lastMessagedAt: newMessage.timestamp } : user
+      );
+      set({ users: updatedUsers });
     });
   },
 
-  // Unsubscribe from new messages
   unsubscribeFromMessages: () => {
     const socket = useAuthStore.getState().socket;
     socket.off("newMessage");
   },
 
-  // Set the selected user for chat
   setSelectedUser: (selectedUser) => set({ selectedUser }),
-
 }));
-

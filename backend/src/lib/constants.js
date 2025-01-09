@@ -9,5 +9,4 @@ export const TOKEN_SOURCES = {
     sameSite: 'none',
     secure: true,
     path: '/',
-    partitioned: true
   };
