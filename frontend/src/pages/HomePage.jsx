@@ -3,9 +3,11 @@ import Sidebar from "../components/Sidebar";
 import NoChatSelected from "../components/NoChatSelected";
 import ChatContainer from "../components/ChatContainer";
 import Footer from "../components/Footer";
+import { motion } from "framer-motion";
 
 const HomePage = () => {
   const { selectedUser } = useChatStore();
+  const isMobile = window.innerWidth < 768; 
 
   return (
     <div className="h-screen w-full bg-base-300 relative">
@@ -17,11 +19,29 @@ const HomePage = () => {
               <Sidebar className="md:w-full w-full md:block flex-1" />
             ) : null}
 
-            {/* ChatContainer: Fullscreen in mobile, side-by-side in desktop */}
+            {/* ChatContainer with Framer Motion for slide-up effect only on mobile */}
             {selectedUser ? (
-              <div className="flex-1 flex h-full">
-                <ChatContainer className="h-full w-full" />
-              </div>
+              isMobile ? (
+                <motion.div
+                  className="flex-1 flex h-full"
+                  initial={{ y: "100%", opacity: 0 }}  
+                  animate={{ y: 0, opacity: 1 }}    
+                  exit={{ y: "100%", opacity: 0 }}    
+                  transition={{
+                    type: "spring",                 
+                    stiffness: 50,                   
+                    damping: 20,                    
+                    mass: 1,                         
+                    duration: 0.5,                   
+                  }}
+                >
+                  <ChatContainer className="h-full w-full" />
+                </motion.div>
+              ) : (
+                <div className="flex-1 flex h-full">
+                  <ChatContainer className="h-full w-full" />
+                </div>
+              )
             ) : (
               <NoChatSelected className="h-full w-full" />
             )}

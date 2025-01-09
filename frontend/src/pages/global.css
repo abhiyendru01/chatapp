@@ -3,4 +3,19 @@
     background-color: #1E1E1E;
     backdrop-filter: blur(10px); /* Adds a blur effect */
   }
-  
+  /* Slide-up animation */
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Class for the chat container slide-up effect */
+.slide-up-animation {
+  animation: slideUp 0.3s ease-in-out;
+}
