@@ -51,7 +51,7 @@ const Sidebar = () => {
           </span>
         </div>
         <div className="w-full p-3 lg:px-3 lg:py-2">
-        <label className="input p-5 md:p-3  input-bordered input-md border-primary/71 border-4 rounded-2xl px-5 py-5 flex items-center gap-2 w-full backdrop-blur-sm">
+        <label className="input p-5 md:p-3  input-bordered input-md border-primary/40 border-4 rounded-2xl px-5 py-5 flex items-center gap-2 w-full backdrop-blur-sm">
           <input
             type="text"
             className="grow placeholder:text-base-content"
