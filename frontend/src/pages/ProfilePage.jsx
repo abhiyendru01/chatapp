@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useAuthStore } from "../store/useAuthStore";
 import Swal from 'sweetalert2';
+import { useChatStore } from "../store/useChatStore";
+import Footer from "../components/Footer";
 import { Camera, Mail, User } from "lucide-react";
 
 const ProfilePage = () => {
@@ -8,6 +10,7 @@ const ProfilePage = () => {
   const [selectedImg, setSelectedImg] = useState(null);
   const [name, setName] = useState(authUser?.fullName || "");
   const [isSaving, setIsSaving] = useState(false);
+  const { selectedUser } = useChatStore();
 
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
@@ -175,6 +178,9 @@ const ProfilePage = () => {
             </div>
           </div>
         </div>
+      </div>
+      <div className={`md:hidden fixed bottom-0 left-0 right-0`}>
+        {!selectedUser && <Footer />}
       </div>
     </div>
   );

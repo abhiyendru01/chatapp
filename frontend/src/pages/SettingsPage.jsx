@@ -1,6 +1,8 @@
 import { THEMES } from "../constants";
 import { useThemeStore } from "../store/useThemeStore";
 import { Send } from "lucide-react";
+import { useChatStore } from "../store/useChatStore";
+import Footer from "../components/Footer";
 import { Image, Mic,} from "lucide-react";
 
 const PREVIEW_MESSAGES = [
@@ -9,6 +11,7 @@ const PREVIEW_MESSAGES = [
 ];
 
 const SettingsPage = () => {
+  const { selectedUser } = useChatStore();
   const { theme, setTheme } = useThemeStore();
 
   return (
@@ -153,6 +156,9 @@ const SettingsPage = () => {
             </div>
           </div>
         </div>
+      </div>
+      <div className={`md:hidden fixed bottom-0 left-0 right-0`}>
+        {!selectedUser && <Footer />}
       </div>
     </div>
   );

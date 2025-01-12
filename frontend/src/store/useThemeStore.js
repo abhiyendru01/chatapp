@@ -57,7 +57,7 @@ const updateManifestTheme = (theme) => {
   const blob = new Blob([stringManifest], { type: "application/json" });
   const manifestURL = URL.createObjectURL(blob);
   const timestamp = new Date().getTime(); // Add timestamp for cache busting
-  document.querySelector('link[rel="manifest"]').setAttribute("href", `${manifestURL}?v=${timestamp}`);
+  document.querySelector('link[rel="../manifest"]').setAttribute("href", `${manifestURL}?v=${timestamp}`);
 };
 
 // Zustand store for theme management
