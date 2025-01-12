@@ -3,8 +3,7 @@ import { Link } from "react-router-dom";
 import { Settings, User, MessageSquare } from "lucide-react";
 
 const Footer = () => {
-  const [selected, setSelected] = useState("chat"); // Default to "chat"
-
+  const [selected, setSelected] = useState("chat"); 
   return (
     <div className="flex justify-center items-center relative transition-all duration-[450ms] ease-in-out w-full p-4">
       <div className="border border-base-300 w-full ease-in-out duration-500 left-0 rounded-2xl flex shadow-lg bg-primary/25 backdrop-blur-md">
