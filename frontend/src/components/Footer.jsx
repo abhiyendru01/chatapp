@@ -5,7 +5,7 @@ import { Settings, User, MessageSquare } from "lucide-react";
 const Footer = () => {
   const [selected, setSelected] = useState("chat"); 
   return (
-    <div className="flex justify-center items-center relative transition-all duration-[450ms] ease-in-out w-full h-10 p-2">
+    <div className="flex justify-center items-center relative transition-all duration-[450ms] ease-in-out w-full h-15 p-2">
       <div className="border border-base-300 w-full ease-in-out duration-500 left-0 rounded-2xl flex shadow-lg bg-primary/25 backdrop-blur-md">
         {/* Settings Option */}
         <Link
