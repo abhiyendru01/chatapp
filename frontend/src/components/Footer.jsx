@@ -7,7 +7,7 @@ const Footer = () => {
 
   return (
     <div className="flex justify-center items-center relative transition-all duration-[450ms] ease-in-out w-full p-4">
-      <div className="border border-primary-60 w-full ease-in-out duration-500 left-0 rounded-2xl flex shadow-lg bg-primary/25 backdrop-blur-md">
+      <div className="border border-base-300 w-full ease-in-out duration-500 left-0 rounded-2xl flex shadow-lg bg-primary/25 backdrop-blur-md">
         {/* Settings Option */}
         <Link
           to="/settings"
