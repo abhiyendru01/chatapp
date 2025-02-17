@@ -6,10 +6,12 @@ export const generateToken = (userId, res) => {
     expiresIn: "7d",
   });
 
+  // Optionally, you could still set the token in cookies for browsers that support it
   res.cookie("jwt", token, {
     ...COOKIE_OPTIONS,
-    expires: new Date(Date.now() + COOKIE_OPTIONS.maxAge)
+    expires: new Date(Date.now() + COOKIE_OPTIONS.maxAge),
   });
 
+  // Send the token in the response as well
   return token;
 };

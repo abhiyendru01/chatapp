@@ -64,7 +64,6 @@ app.use(
           "'self'",
           "http://localhost:5173",
           "https://chatapp003.vercel.app",
-          "https://fullstack-chat-4vla6v6q8-abhiyendru01s-projects.vercel.app",
         ],
         objectSrc: ["'none'"],
         frameSrc: ["'none'"],

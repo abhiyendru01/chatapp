@@ -1,0 +1,8 @@
+runtime: nodejs14  # Replace with your app's runtime
+env: standard
+
+handlers:
+  - url: /api/*
+    script: auto
+  - url: /static/*
+    static_dir: static
