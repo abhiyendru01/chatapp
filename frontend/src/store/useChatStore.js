@@ -6,7 +6,7 @@ import { useAuthStore } from "./useAuthStore";
 export const useChatStore = create((set, get) => ({
   contacts: [],
   messages: [],
-  users: [], // This should now include a `lastMessagedAt` field for each user
+  users: [],
   selectedUser: null,
   isUsersLoading: false,
   isMessagesLoading: false,
@@ -20,7 +20,7 @@ export const useChatStore = create((set, get) => ({
       const res = await axiosInstance.get("/messages/users");
       const usersWithTimestamp = res.data.map((user) => ({
         ...user,
-        lastMessagedAt: user.lastMessagedAt || null, // Default to null if not provided
+        lastMessagedAt: user.lastMessagedAt || null,
       }));
       set({ users: usersWithTimestamp });
     } catch (error) {
@@ -36,7 +36,6 @@ export const useChatStore = create((set, get) => ({
       const res = await axiosInstance.get(`/messages/${userId}`);
       set({ messages: res.data });
 
-      // Update lastMessagedAt for this user
       const updatedUsers = get().users.map((user) =>
         user._id === userId ? { ...user, lastMessagedAt: new Date().toISOString() } : user
       );
@@ -54,7 +53,6 @@ export const useChatStore = create((set, get) => ({
       const res = await axiosInstance.post(`/messages/send/${selectedUser._id}`, messageData);
       set({ messages: [...messages, res.data] });
 
-      // Update lastMessagedAt for the recipient
       const updatedUsers = users.map((user) =>
         user._id === selectedUser._id ? { ...user, lastMessagedAt: new Date().toISOString() } : user
       );
@@ -66,29 +64,24 @@ export const useChatStore = create((set, get) => ({
 
   subscribeToMessages: () => {
     const { selectedUser } = get();
-    if (!selectedUser) return;
-
     const socket = useAuthStore.getState().socket;
+    if (!selectedUser || !socket) return;
 
     socket.on("newMessage", (newMessage) => {
-      const isMessageSentFromSelectedUser = newMessage.senderId === selectedUser._id;
-      if (!isMessageSentFromSelectedUser) return;
+      if (newMessage.senderId === selectedUser._id) {
+        set({ messages: [...get().messages, newMessage] });
 
-      set({
-        messages: [...get().messages, newMessage],
-      });
-
-      // Update lastMessagedAt for the sender
-      const updatedUsers = get().users.map((user) =>
-        user._id === newMessage.senderId ? { ...user, lastMessagedAt: newMessage.timestamp } : user
-      );
-      set({ users: updatedUsers });
+        const updatedUsers = get().users.map((user) =>
+          user._id === newMessage.senderId ? { ...user, lastMessagedAt: newMessage.timestamp } : user
+        );
+        set({ users: updatedUsers });
+      }
     });
   },
 
   unsubscribeFromMessages: () => {
     const socket = useAuthStore.getState().socket;
-    socket.off("newMessage");
+    if (socket) socket.off("newMessage");
   },
 
   setSelectedUser: (selectedUser) => set({ selectedUser }),

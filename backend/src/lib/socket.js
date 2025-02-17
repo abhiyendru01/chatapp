@@ -7,19 +7,18 @@ import { sendPushNotification } from "../lib/firebaseAdmin"; // Import the push 
 const app = express();
 const server = http.createServer(app);
 
-// Initialize io after creating the server
 const io = new Server(server, {
   cors: {
     origin: process.env.NODE_ENV === "production"
       ? "https://chatapp003.vercel.app"
-      : "http://localhost:5173", // Replace with your actual development URL
+      : "http://localhost:5173", // Adjust to your dev URL
     methods: ["GET", "POST"],
   },
 });
 
 let userSocketMap = {};
 
-// Connection event for new users
+// When a new user connects
 io.on("connection", (socket) => {
   console.log(`A user connected: ${socket.id}`);
 
@@ -48,18 +47,9 @@ io.on("connection", (socket) => {
         // Send push notification if the user is not connected to the app
         const receiverFCMToken = await getReceiverFCMToken(receiverId);  // Retrieve the FCM token from your DB
         if (receiverFCMToken) {
-          sendPushNotification(receiverFCMToken, message);  // Send push notification
+          sendPushNotification(receiverFCMToken, message);  // Send the push notification
         }
       }
-    }
-  });
-
-  // Listen for messageReceived to notify sender of successful message delivery
-  socket.on("messageReceived", ({ receiverId, message }) => {
-    const senderId = socket.handshake.query.userId;
-    if (receiverId && senderId) {
-      // Optionally, acknowledge the message reception
-      io.to(senderId).emit("messageAck", { receiverId, message });
     }
   });
 
@@ -84,5 +74,4 @@ async function getReceiverFCMToken(receiverId) {
   }
 }
 
-// Export app, server, and io for use in other parts of the application
 export { app, server, io };
