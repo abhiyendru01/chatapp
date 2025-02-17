@@ -82,5 +82,9 @@ async function getReceiverFCMToken(receiverId) {
   }
 }
 
+export function getReceiverSocketId(userSocketMap, receiverId) {
+  return userSocketMap[receiverId] || null;
+}
+
 // Export the app, server, and io for use in other parts of the application
 export { app, server, io };
