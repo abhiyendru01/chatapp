@@ -1,9 +1,7 @@
 import admin from "firebase-admin";
 
-// Initialize Firebase Admin SDK
 admin.initializeApp({
   credential: admin.credential.cert({
-    // Replace with your Firebase Service Account credentials
  "type": "service_account",
   "project_id": "chatapp-678e2",
   "private_key_id": "0ece3786fad51e44764f26cbe6df5a17462eb683",
@@ -18,14 +16,13 @@ admin.initializeApp({
   }),
 });
 
-// Function to send a push notification to a user
 const sendPushNotification = (token, message) => {
   const messagePayload = {
     notification: {
       title: "New Message",
       body: message,
     },
-    token: token, // Recipient's device token
+    token: token,
   };
 
   admin.messaging().send(messagePayload)

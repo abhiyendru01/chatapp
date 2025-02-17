@@ -2,7 +2,7 @@ import { Server } from "socket.io";
 import http from "http";
 import express from "express";
 import User from "../models/user.model.js"; // Assuming you have this model file
-import { sendPushNotification } from "../lib/firebaseAdmin"; // Import the push notification function
+import { sendPushNotification } from "./firebaseAdmin.js"; // function
 
 const app = express();
 const server = http.createServer(app);
