@@ -6,7 +6,11 @@ import toast from "react-hot-toast";
 const MessageInput = () => {
   const [text, setText] = useState("");
   const [imagePreview, setImagePreview] = useState(null);
+  const [isRecording, setIsRecording] = useState(false);
+  const [audioBlob, setAudioBlob] = useState(null);
   const fileInputRef = useRef(null);
+  const mediaRecorderRef = useRef(null);
+  const audioChunksRef = useRef([]);
   const { sendMessage } = useChatStore();
 
   const handleImageChange = (e) => {
@@ -30,19 +34,56 @@ const MessageInput = () => {
 
   const handleSendMessage = async (e) => {
     e.preventDefault();
-    if (!text.trim() && !imagePreview) return;
+    if (!text.trim() && !imagePreview && !audioBlob) return;
 
     try {
       await sendMessage({
         text: text.trim(),
         image: imagePreview,
+        audio: audioBlob, // Include the audio blob in the message
       });
 
       setText("");
       setImagePreview(null);
+      setAudioBlob(null); // Clear the audio blob after sending
       if (fileInputRef.current) fileInputRef.current.value = "";
     } catch (error) {
       console.error("Failed to send message:", error);
+    }
+  };
+
+  const startRecording = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      mediaRecorderRef.current = new MediaRecorder(stream);
+      mediaRecorderRef.current.ondataavailable = (event) => {
+        audioChunksRef.current.push(event.data);
+      };
+      mediaRecorderRef.current.onstop = () => {
+        const audioBlob = new Blob(audioChunksRef.current, { type: "audio/wav" });
+        setAudioBlob(audioBlob);
+        audioChunksRef.current = [];
+      };
+      mediaRecorderRef.current.start();
+      setIsRecording(true);
+    } catch (error) {
+      console.error("Error accessing microphone:", error);
+      toast.error("Microphone access denied");
+    }
+  };
+
+  const stopRecording = () => {
+    if (mediaRecorderRef.current) {
+      mediaRecorderRef.current.stop();
+      setIsRecording(false);
+    }
+  };
+
+  const handleVoiceNoteClick = () => {
+    if (isRecording) {
+      stopRecording();
+    } else {
+      startRecording();
     }
   };
 
@@ -68,12 +109,27 @@ const MessageInput = () => {
         </div>
       )}
 
+      {audioBlob && (
+        <div className="mb-3 flex items-center gap-2">
+          <audio controls src={URL.createObjectURL(audioBlob)} />
+          <button
+            onClick={() => setAudioBlob(null)}
+            className="btn btn-circle bg-base-300 hover:bg-base-400 text-base-content"
+            type="button"
+          >
+            <X size={16} />
+          </button>
+        </div>
+      )}
+
       <form onSubmit={handleSendMessage} className="flex items-center gap-3">
-        
         {/* Voice Note Button */}
         <button
           type="button"
-          className="btn btn-circle bg-base-100/80 hover:bg-base-200 text-base-content shadow-lg"
+          className={`btn btn-circle ${
+            isRecording ? "bg-red-500 hover:bg-red-600" : "bg-base-100/80 hover:bg-base-200"
+          } text-base-content shadow-lg`}
+          onClick={handleVoiceNoteClick}
         >
           <Mic size={20} />
         </button>
@@ -104,6 +160,7 @@ const MessageInput = () => {
         >
           <Image size={20} />
         </button>
+
         {/* Send Button */}
         <button
           type="submit"
@@ -111,7 +168,6 @@ const MessageInput = () => {
         >
           <Send size={20} />
         </button>
-
       </form>
     </div>
   );
