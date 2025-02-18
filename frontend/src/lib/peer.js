@@ -1,23 +1,35 @@
-import Peer from "simple-peer";
+import Peer from 'simple-peer';
 
 export const createPeer = (userId, socket, stream) => {
   const peer = new Peer({
     initiator: true,
     trickle: false,
-    stream,
+    stream: stream,
   });
 
-  peer.on("signal", (signal) => {
-    socket.emit("callUser", { userToCall: userId, signal });
+  peer.on('signal', (signal) => {
+    socket.emit('callUser', {
+      userToCall: userId,
+      from: socket.id,
+      signalData: signal,
+    });
   });
 
   return peer;
 };
 
-export const acceptPeer = (incomingSignal, socket, stream) => {
+export const acceptPeer = (signal, socket, stream) => {
   const peer = new Peer({
     initiator: false,
-    trickle: false,    stream,
-  });  peer.signal(incomingSignal);
+    trickle: false,
+    stream: stream,
+  });
+
+  peer.on('signal', (signal) => {
+    socket.emit('acceptCall', { signal, to: socket.id });
+  });
+
+  peer.signal(signal);
+
   return peer;
 };

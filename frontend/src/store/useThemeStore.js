@@ -38,7 +38,7 @@ const themeColorMap = {
 
 // Function to update manifest.json dynamically
 const updateManifestTheme = (theme) => {
-  const themeColor = themeColorMap[theme] ; // Default to light theme if not found
+  const themeColor = themeColorMap[theme] || themeColorMap['light']; // Default to light theme if not found
   const manifest = {
     short_name: "Stardust",
     name: "Chat Application by Abhiyendru",
@@ -52,20 +52,24 @@ const updateManifestTheme = (theme) => {
     display: "standalone",
   };
 
-  // Dynamically update the manifest file with a timestamp to avoid cache
   const stringManifest = JSON.stringify(manifest);
   const blob = new Blob([stringManifest], { type: "application/json" });
   const manifestURL = URL.createObjectURL(blob);
-  const timestamp = new Date().getTime(); // Add timestamp for cache busting
-  document.querySelector('link[rel="../manifest"]').setAttribute("href", `${manifestURL}?v=${timestamp}`);
+  const timestamp = new Date().getTime(); 
+  const manifestLink = document.querySelector('link[rel="manifest"]');
+  if (manifestLink) {
+    manifestLink.setAttribute("href", `${manifestURL}?v=${timestamp}`);
+  }
 };
 
-// Zustand store for theme management
 export const useThemeStore = create((set) => ({
-  theme: localStorage.getItem("chat-theme") || "autumn",
+  theme: localStorage.getItem("chat-theme") || "nord",
   setTheme: (theme) => {
     localStorage.setItem("chat-theme", theme);
-    updateManifestTheme(theme); // Update manifest.json when the theme changes
+    updateManifestTheme(theme);
+    
+    document.documentElement.setAttribute("data-theme", theme); 
+    
     set({ theme });
   },
 }));

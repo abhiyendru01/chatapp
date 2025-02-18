@@ -1,43 +1,41 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
+import { motion } from "framer-motion";
 import { Settings, User, MessageSquare } from "lucide-react";
 
 const Footer = () => {
-  const [selected, setSelected] = useState("chat"); 
+  const location = useLocation(); // Get the current route
+
+  // Get correct left position for active tab
+  const getActiveTabPosition = () => {
+    if (location.pathname === "/settings") return "0%";  // Left (Settings)
+    if (location.pathname === "/profile") return "66.66%";  // Right (Profile)
+    return "33.33%"; // Center (Chat)
+  };
+
   return (
-    <div className="flex justify-center items-center relative transition-all duration-[450ms] ease-in-out w-full h-15 p-2">
-      <div className="border border-base-300 w-full ease-in-out duration-500 left-0 rounded-2xl flex shadow-lg bg-primary/25 backdrop-blur-md">
-        {/* Settings Option */}
-        <Link
-          to="/settings"
-          onClick={() => setSelected("settings")}
-          className={`relative w-full h-16 p-4 ease-in-out duration-300 border-solid group flex flex-row gap-3 items-center justify-center text-base-content rounded-xl ${
-            selected === "settings" ? "bg-primary/50" : ""
-          }`}
-        >
-          <Settings className="w-6 h-6 peer-hover:scale-110 transition-all duration-300" />
+    <div className="flex justify-center items-center relative w-full h-20 p-2">
+      <div className="relative border border-base-300 w-full rounded-2xl flex shadow-lg bg-primary/25 backdrop-blur-md">
+        
+        {/*Active Tab Indicator - Slides Correctly */}
+        <motion.div
+          className="absolute top-0 left-0 w-1/3 h-full bg-primary/50 rounded-2xl"
+          animate={{ left: getActiveTabPosition() }}
+          transition={{ type: "spring", stiffness: 120, damping: 12 }}
+        />
+
+        {/*Settings Tab */}
+        <Link to="/settings" className="relative w-1/3 h-16 flex items-center justify-center">
+          <Settings className="w-6 h-6 transition-all duration-300" />
         </Link>
 
-        {/* Chat/Home Option - Circular */}
-        <Link
-          to="/"
-          onClick={() => setSelected("chat")}
-          className={`relative w-96 h-16 p-4 ease-in-out duration-300 border-solid group border-primary/30 flex items-center  justify-center text-base-content rounded-3xl cursor-pointer border ${
-            selected === "chat" ? "bg-primary/10 hover:bg-primary/50" : "bg-transparent"
-          }`}
-        >
-          <MessageSquare className="w-6 h-6 peer-hover:scale-110 transition-all duration-300" />
+        {/*Chat/Home Tab */}
+        <Link to="/" className="relative w-1/3 h-16 flex items-center justify-center">
+          <MessageSquare className="w-6 h-6 transition-all duration-300" />
         </Link>
 
-        {/* Profile Option */}
-        <Link
-          to="/profile"
-          onClick={() => setSelected("profile")}
-          className={`relative w-full h-16 p-4 ease-in-out duration-300 border-solid group flex flex-row gap-3 items-center justify-center text-base-content rounded-xl ${
-            selected === "profile" ? "bg-primary/50" : ""
-          }`}
-        >
-          <User className="w-6 h-6 peer-hover:scale-110 transition-all duration-300" />
+        {/*Profile Tab */}
+        <Link to="/profile" className="relative w-1/3 h-16 flex items-center justify-center">
+          <User className="w-6 h-6 transition-all duration-300" />
         </Link>
       </div>
     </div>
