@@ -1,7 +1,7 @@
 import { Server } from "socket.io";
 import http from "http";
 import express from "express";
-import User from "../models/user.model.js"; // User model
+import User from "../models/user.model.js"; // Assuming you have this model file
 import { sendPushNotification } from "./firebaseAdmin.js"; // Function to send push notifications
 
 const app = express();
@@ -11,9 +11,9 @@ const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
     origin: [
-      "http://localhost:5173",  // Development frontend
-      "https://chatapp003.vercel.app",  // Production frontend
-      "https://fullstack-chat-app-master-j115.onrender.com"  // Render backend
+      "http://localhost:5173", // Development frontend
+      "https://chatapp003.vercel.app", // Production frontend
+      "https://fullstack-chat-app-master-j115.onrender.com" // Render backend
     ],
     methods: ["GET", "POST"],
     credentials: true,  // Allows cookies and authentication headers
@@ -21,22 +21,6 @@ const io = new Server(server, {
 });
 
 let userSocketMap = {}; // Store userId to socketId mapping
-
-io.on("connection", (socket) => {
-  console.log(`User connected: ${socket.id}`);
-
-  socket.on("callUser", ({ userToCall, from, signal }) => {
-    io.to(userSocketMap[userToCall]).emit("incomingCall", { from, signal });
-  });
-
-  socket.on("acceptCall", ({ signal, to }) => {
-    io.to(userSocketMap[to]).emit("callAccepted", signal);
-  });
-
-  socket.on("disconnect", () => {
-    console.log(`User disconnected: ${socket.id}`);
-  });
-});
 
 // When a new user connects
 io.on("connection", (socket) => {
@@ -73,7 +57,8 @@ io.on("connection", (socket) => {
 
     if (receiverSocketId) {
       console.log(`✅ User ${receiverId} is online, sending message.`);
-      io.to(receiverSocketId).emit("incomingMessage", { senderId, message });
+      // Emit the new message to the receiver
+      io.to(receiverSocketId).emit("newMessage", { senderId, message });
     } else {
       console.log(`⚠️ User ${receiverId} is offline, sending push notification.`);
 

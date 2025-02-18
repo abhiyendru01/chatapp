@@ -6,6 +6,9 @@ import ChatHeader from "./ChatHeader";
 import MessageInput from "./MessageInput";
 import './bubble.css';
 import MessageSkeleton from "./skeletons/MessageSkeleton";
+import { io } from "socket.io-client";  // Import socket.io-client
+
+const socket = io("http://localhost:5001","https://fullstack-chat-app-master-j115.onrender.com"); // Your backend URL
 
 const ChatContainer = () => {
   const {
@@ -15,16 +18,31 @@ const ChatContainer = () => {
     selectedUser,
     subscribeToMessages,
     unsubscribeFromMessages,
+    setMessages,
   } = useChatStore();
   const { authUser } = useAuthStore();
   const messageEndRef = useRef(null);
 
+  // Fetch messages when the selected user changes
   useEffect(() => {
     getMessages(selectedUser._id);
     subscribeToMessages();
     return () => unsubscribeFromMessages();
   }, [selectedUser._id, getMessages, subscribeToMessages, unsubscribeFromMessages]);
 
+  // Listen for real-time messages
+  useEffect(() => {
+    socket.on("newMessage", (newMessage) => {
+      // Update the message list when a new message is received
+      setMessages((prevMessages) => [...prevMessages, newMessage]);
+    });
+
+    return () => {
+      socket.off("newMessage");  // Cleanup the listener when the component unmounts
+    };
+  }, [setMessages]);
+
+  // Scroll to the latest message when new messages are received
   useEffect(() => {
     if (messageEndRef.current && messages) {
       messageEndRef.current.scrollIntoView({ behavior: "smooth" });
@@ -68,6 +86,7 @@ const ChatContainer = () => {
                 message.senderId === authUser._id ? "bg-primary" : "bg-base-300/100"
               } p-4 rounded-lg shadow-lg transition duration-300 ease-in-out hover:shadow-xl w-max max-w-full`}
             >
+              {/* Text Message */}
               {message.text && (
                 <p
                   className={`${
@@ -79,13 +98,18 @@ const ChatContainer = () => {
                   {message.text}
                 </p>
               )}
-              {message.image && (
-                <img
-                  src={message.image}
-                  alt="Attachment"
-                  className="w-full mt-3 rounded-md shadow-md"
-                />
+
+              {/* Audio (Voice Note) Message */}
+              {message.audio && (
+                <div className="flex items-center gap-2 mt-3">
+                  <audio controls>
+                    <source src={message.audio} type="audio/wav" />
+                    Your browser does not support the audio element.
+                  </audio>
+                </div>
               )}
+
+              {/* Timestamp */}
               <div
                 className={`mt-1 text-xs ${
                   message.senderId === authUser._id
@@ -98,7 +122,6 @@ const ChatContainer = () => {
             </div>
           </div>
         ))}
-        {/* Ensure scrolling to the last message */}
         <div ref={messageEndRef}></div>
       </div>
       <MessageInput />

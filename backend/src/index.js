@@ -3,12 +3,12 @@ import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import path from "path";
-import helmet from "helmet"; // Add helmet
+import helmet from "helmet";
 import { connectDB } from "./lib/db.js";
 import authRoutes from "./routes/auth.route.js";
 import messageRoutes from "./routes/message.route.js";
 import friendRoutes from "./routes/friend.route.js";
-import { app, server } from "./lib/socket.js";
+import { app, server } from "./lib/socket.js";  // Ensure socket is imported here
 
 dotenv.config();
 
@@ -26,7 +26,7 @@ const allowedOrigins = [
 app.use(express.json());
 app.use(cookieParser());
 
-// Add CORS
+// CORS setup to allow requests from allowed origins
 app.use(
   cors({
     origin: function (origin, callback) {
@@ -43,7 +43,7 @@ app.use(
   })
 );
 
-// Add Helmet for Security
+// Helmet security middleware
 app.use(
   helmet({
     contentSecurityPolicy: {
@@ -51,22 +51,14 @@ app.use(
         defaultSrc: ["'self'"],
         scriptSrc: [
           "'self'",
-          "'unsafe-inline'", // Allows inline scripts; remove if not necessary
+          "'unsafe-inline'",
           "https://chatapp003.vercel.app",
           "https://fullstack-chat-4vla6v6q8-abhiyendru01s-projects.vercel.app",
         ],
-        styleSrc: [
-          "'self'",
-          "'unsafe-inline'", // Allows inline styles; remove if not necessary
-          "https://fonts.googleapis.com",
-        ],
+        styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
         fontSrc: ["'self'", "https://fonts.gstatic.com"],
         imgSrc: ["'self'", "data:"],
-        connectSrc: [
-          "'self'",
-          "http://localhost:5173",
-          "https://chatapp003.vercel.app",
-        ],
+        connectSrc: ["'self'", "http://localhost:5173", "https://chatapp003.vercel.app"],
         objectSrc: ["'none'"],
         frameSrc: ["'none'"],
       },
@@ -78,7 +70,6 @@ app.use(
 app.use("/api/auth", authRoutes);
 app.use("/api/messages", messageRoutes);
 app.use("/api/friends", friendRoutes);
-
 
 // Serve frontend in production
 if (process.env.NODE_ENV === "production") {
