@@ -10,7 +10,7 @@ import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { useAuthStore } from "./store/useAuthStore";
 import { useThemeStore } from "./store/useThemeStore";
 import { useEffect } from "react";
-import "./lib/serviceWorker";
+
 import { Loader } from "lucide-react";
 import { Toaster } from "react-hot-toast";
 
@@ -24,17 +24,60 @@ const App = () => {
     checkAuth();
   }, [checkAuth]);
 
- 
-  if ("serviceWorker" in navigator) {
-    navigator.serviceWorker
-      .register("/service-worker.js")
-      .then((registration) => {
-        console.log("Service Worker registered:", registration);
-      })
-      .catch((error) => {
-        console.error("Service Worker registration failed:", error);
+  useEffect(() => {
+    if ('Notification' in window && 'serviceWorker' in navigator) {
+      Notification.requestPermission().then((permission) => {
+        if (permission === 'granted') {
+          console.log('Notification permission granted.');
+        } else {
+          console.log('Notification permission denied.');
+        }
       });
-  }
+    }
+
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker
+        .register('/service-worker.js')
+        .then((registration) => {
+          console.log('Service Worker registered:', registration);
+        })
+        .catch((error) => {
+          console.error('Service Worker registration failed:', error);
+        });
+    }
+  }, []);
+  useEffect(() => {
+    if ('Notification' in window && 'serviceWorker' in navigator) {
+      navigator.serviceWorker.ready.then((registration) => {
+        registration.pushManager.getSubscription().then((subscription) => {
+          if (!subscription) {
+            registration.pushManager.subscribe({
+              userVisibleOnly: true,
+              applicationServerKey: '<Your-VAPID-Public-Key>',  // Replace with your VAPID public key
+            }).then((newSubscription) => {
+              console.log('New subscription:', newSubscription);
+              // Send the subscription to the server
+              sendSubscriptionToServer(newSubscription);
+            }).catch((error) => {
+              console.error('Subscription failed:', error);
+            });
+          }
+        });
+      });
+    }
+  }, []);
+  
+  const sendSubscriptionToServer = async (subscription) => {
+    const response = await fetch('/api/save-subscription', {
+      method: 'POST',
+      body: JSON.stringify(subscription),
+      headers: { 'Content-Type': 'application/json' },
+    });
+  
+    if (!response.ok) {
+      console.error('Failed to send subscription to server');
+    }
+  };
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);
   }, [theme]);

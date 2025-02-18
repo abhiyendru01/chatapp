@@ -19,21 +19,18 @@ const ChatContainer = () => {
   const { authUser } = useAuthStore();
   const messageEndRef = useRef(null);
 
-  // Fetch messages when the selected user changes
   useEffect(() => {
     getMessages(selectedUser._id);
     subscribeToMessages();
     return () => unsubscribeFromMessages();
   }, [selectedUser._id, getMessages, subscribeToMessages, unsubscribeFromMessages]);
 
-  // Scroll to the latest message when new messages are received
   useEffect(() => {
     if (messageEndRef.current && messages) {
       messageEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [messages]);
 
-  // Show loading skeleton while messages are being fetched
   if (isMessagesLoading) {
     return (
       <div className="flex-1 flex flex-col h-full">
@@ -71,7 +68,6 @@ const ChatContainer = () => {
                 message.senderId === authUser._id ? "bg-primary" : "bg-base-300/100"
               } p-4 rounded-lg shadow-lg transition duration-300 ease-in-out hover:shadow-xl w-max max-w-full`}
             >
-              {/* Text Message */}
               {message.text && (
                 <p
                   className={`${
@@ -83,8 +79,6 @@ const ChatContainer = () => {
                   {message.text}
                 </p>
               )}
-
-              {/* Image Message */}
               {message.image && (
                 <img
                   src={message.image}
@@ -92,18 +86,6 @@ const ChatContainer = () => {
                   className="w-full mt-3 rounded-md shadow-md"
                 />
               )}
-
-              {/* Audio (Voice Note) Message */}
-              {message.audio && (
-                <div className="flex items-center gap-2 mt-3">
-                  <audio controls>
-                    <source src={message.audio} type="audio/wav" />
-                    Your browser does not support the audio element.
-                  </audio>
-                </div>
-              )}
-
-              {/* Timestamp */}
               <div
                 className={`mt-1 text-xs ${
                   message.senderId === authUser._id
@@ -116,7 +98,7 @@ const ChatContainer = () => {
             </div>
           </div>
         ))}
-        {/* Scroll to the last message */}
+        {/* Ensure scrolling to the last message */}
         <div ref={messageEndRef}></div>
       </div>
       <MessageInput />
