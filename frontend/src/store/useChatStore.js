@@ -6,6 +6,8 @@ import { useAuthStore } from "./useAuthStore";
 export const useChatStore = create((set, get) => ({
   contacts: [],
   messages: [],
+  friends: [],
+  friendRequests: [],
   users: [],
   selectedUser: null,
   isUsersLoading: false,
@@ -79,6 +81,67 @@ export const useChatStore = create((set, get) => ({
     });
   },
 
+    
+  getFriends: async () => {
+    try {
+      const res = await axiosInstance.get("/api/friends/friends"); // Ensure correct API path
+  
+      console.log("getFriends API Response:", res); // Debugging
+  
+      if (Array.isArray(res.data)) {
+        set({ friends: res.data });
+      } else {
+        console.error("Error: getFriends API did not return an array:", res.data);
+        set({ friends: [] });
+      }
+    } catch (error) {
+      console.error("Error fetching friends:", error);
+      set({ friends: [] });
+      toast.error(error.response?.data?.message || "Error fetching friends");
+    }
+  },
+  
+
+  getFriendRequests: async () => {
+    try {
+      const res = await axiosInstance.get("/api/friends/friend-requests"); // ✅ Ensure correct API route
+      set({ friendRequests: res.data || [] }); // ✅ Ensure an array
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Error fetching friend requests");
+      set({ friendRequests: [] });
+    }
+  },
+
+  sendFriendRequest: async (userId) => {
+    try {
+      await axiosInstance.post("/api/friends/send-request", { receiverId: userId }); // ✅ Correct API path
+      toast.success("Friend request sent!");
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Error sending friend request");
+    }
+  },
+
+  acceptFriendRequest: async (senderId) => {
+    try {
+      await axiosInstance.post("/api/friends/accept-request", { senderId }); // ✅ Correct API path
+      toast.success("Friend request accepted!");
+      get().getFriends(); // Refresh friends list
+      get().getFriendRequests(); // Refresh friend requests list
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Error accepting friend request");
+    }
+  },
+
+  rejectFriendRequest: async (senderId) => {
+    try {
+      await axiosInstance.post("/api/friends/reject-request", { senderId }); // ✅ Correct API path
+      toast.success("Friend request rejected!");
+      get().getFriendRequests(); // Refresh friend requests list
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Error rejecting friend request");
+    }
+  },
+  
   unsubscribeFromMessages: () => {
     const socket = useAuthStore.getState().socket;
     if (socket) socket.off("newMessage");

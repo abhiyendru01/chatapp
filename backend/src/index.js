@@ -7,6 +7,7 @@ import helmet from "helmet"; // Add helmet
 import { connectDB } from "./lib/db.js";
 import authRoutes from "./routes/auth.route.js";
 import messageRoutes from "./routes/message.route.js";
+import friendRoutes from "./routes/friend.route.js";
 import { app, server } from "./lib/socket.js";
 
 dotenv.config();
@@ -18,6 +19,7 @@ const allowedOrigins = [
   "http://localhost:5173",
   "https://chatapp003.vercel.app",
   "https://fullstack-chat-4vla6v6q8-abhiyendru01s-projects.vercel.app",
+  "http://localhost:5001",
 ];
 
 // Middleware setup
@@ -75,6 +77,7 @@ app.use(
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/messages", messageRoutes);
+app.use("/api/friends", friendRoutes);
 
 // Serve frontend in production
 if (process.env.NODE_ENV === "production") {
