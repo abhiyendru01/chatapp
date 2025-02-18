@@ -2,7 +2,7 @@ import { generateToken } from "../lib/utils.js";
 import User from "../models/user.model.js";
 import bcrypt from "bcryptjs";
 import { v2 as cloudinary } from "cloudinary";
-import User from "../models/user.model.js";
+import dotenv from "dotenv";
 import multer from "multer";
 
 dotenv.config();
