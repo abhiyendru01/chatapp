@@ -30,7 +30,7 @@ const ChatContainer = () => {
     return () => unsubscribeFromMessages();
   }, [selectedUser._id, getMessages, subscribeToMessages, unsubscribeFromMessages]);
 
-  // Listen for real-time messages
+  // Listen for new message event
   useEffect(() => {
     socket.on("newMessage", (newMessage) => {
       // Update the message list when a new message is received
@@ -38,7 +38,7 @@ const ChatContainer = () => {
     });
 
     return () => {
-      socket.off("newMessage");  // Cleanup the listener when the component unmounts
+      socket.off("newMessage");
     };
   }, [setMessages]);
 
