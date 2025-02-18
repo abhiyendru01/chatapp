@@ -13,18 +13,18 @@ const Footer = () => {
   };
 
   return (
-    <div className="flex justify-center items-center relative w-full h-20 p-2">
+    <div className="flex justify-center items-center relative w-full h-15 p-0 ">
       <div className="relative border border-base-300 w-full rounded-2xl flex shadow-lg bg-primary/25 backdrop-blur-md">
         
         {/*Active Tab Indicator - Slides Correctly */}
         <motion.div
-          className="absolute top-0 left-0 w-1/3 h-full bg-primary/50 rounded-2xl"
+          className="absolute top-0 left-0 w-1/3 h-full bg-primary/20 border border-primary/40 rounded-2xl"
           animate={{ left: getActiveTabPosition() }}
           transition={{ type: "spring", stiffness: 120, damping: 12 }}
         />
 
         {/*Settings Tab */}
-        <Link to="/settings" className="relative w-1/3 h-16 flex items-center justify-center">
+        <Link to="/settings" className="relative w-1/3 h-18 flex items-center justify-center">
           <Settings className="w-6 h-6 transition-all duration-300" />
         </Link>
 
@@ -34,7 +34,7 @@ const Footer = () => {
         </Link>
 
         {/*Profile Tab */}
-        <Link to="/profile" className="relative w-1/3 h-16 flex items-center justify-center">
+        <Link to="/profile" className="relative w-1/3 h-18 flex items-center justify-center">
           <User className="w-6 h-6 transition-all duration-300" />
         </Link>
       </div>

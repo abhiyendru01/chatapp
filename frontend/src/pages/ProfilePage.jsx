@@ -160,14 +160,14 @@ const ProfilePage = () => {
           </div>
 
           {/* Save button */}
-          <div className="mt-6 text-center justify-items-center">
+          <div className="mt-6 flex justify-center">
             <button
               title="Save"
               className="cursor-pointer flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-primary/30 text-primary-content hover:bg-primary active:border active:border-lime-400 duration-300"
               onClick={handleSave}
               disabled={isSaving}
             >
-              <span className="font-semibold justify-items-center">Save</span>
+              <span className="font-semibold">Save</span>
             </button>
           </div>
         </div>

@@ -13,7 +13,6 @@ const Sidebar = () => {
     getUsers();
   }, [getUsers]);
 
-  // Sort and filter users
   const sortedAndFilteredUsers = users
     .sort((a, b) => {
       const timeA = new Date(a.lastInteraction).getTime();

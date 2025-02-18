@@ -1,7 +1,14 @@
 import { generateToken } from "../lib/utils.js";
 import User from "../models/user.model.js";
 import bcrypt from "bcryptjs";
-import cloudinary from "../lib/cloudinary.js";
+import { v2 as cloudinary } from "cloudinary";
+import User from "../models/user.model.js";
+import multer from "multer";
+
+dotenv.config();
+const storage = multer.memoryStorage();  // Store the file in memory
+const upload = multer({ storage: storage }); // Set multer to use the memory storage
+
 
 export const signup = async (req, res) => {
   const { fullName, email, password } = req.body;
@@ -89,27 +96,43 @@ export const logout = (req, res) => {
 
 export const updateProfile = async (req, res) => {
   try {
-    const { profilePic, fullName } = req.body;
-    const userId = req.user._id;
+    const { profilePic, fullName } = req.body; // Get other profile data
+    const userId = req.user._id; // Get the current user's ID
 
+    // Ensure a profile pic is provided
     if (!profilePic) {
       return res.status(400).json({ message: "Profile pic is required" });
     }
 
-    const uploadResponse = await cloudinary.uploader.upload(profilePic);
-    const updatedUser = await User.findByIdAndUpdate(
-      userId,
-      { profilePic: uploadResponse.secure_url, fullName },
-      { new: true }
+    // Upload the image to Cloudinary
+    const uploadResponse = await cloudinary.uploader.upload_stream(
+      { resource_type: "image", folder: "images" },
+      async (error, result) => {
+        if (error) {
+          return res.status(500).json({ message: "Cloudinary upload failed", error });
+        }
+
+        // Update the user's profile with the new profile picture URL
+        const updatedUser = await User.findByIdAndUpdate(
+          userId,
+          {
+            fullName: fullName || "", // Update full name if provided
+            profilePic: result.secure_url, // Cloudinary URL for the profile picture
+          },
+          { new: true }
+        );
+
+        return res.status(200).json(updatedUser);
+      }
     );
 
-    res.status(200).json(updatedUser);
+    // Pipe the file to Cloudinary upload stream
+    req.file.stream.pipe(uploadResponse);
   } catch (error) {
     console.error("Error in update profile:", error.message);
     res.status(500).json({ message: "Internal server error" });
   }
 };
-
 
 export const checkAuth = (req, res) => {
   try {

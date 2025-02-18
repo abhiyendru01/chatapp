@@ -4,13 +4,17 @@ import express from "express";
 import { checkAuth, login, logout, signup, updateProfile, sendFriendRequest, acceptFriendRequest, rejectFriendRequest, getFriendsList } from "../controllers/auth.controller.js";
 import { protectRoute } from "../middleware/auth.middleware.js";
 
+
+const storage = multer.memoryStorage();  
+const upload = multer({ storage: storage }); 
+
 const router = express.Router();
 
 router.post("/signup", signup);
 router.post("/login", login);
 router.post("/logout", logout);
 
-router.put("/update-profile", protectRoute, updateProfile);
+router.put("/update-profile", protectRoute, upload.single("profilePic"), updateProfile);
 router.get("/check", protectRoute, checkAuth);
 
 // Using protectRoute middleware for these routes
