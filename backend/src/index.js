@@ -78,6 +78,13 @@ if (process.env.NODE_ENV === "production") {
     res.sendFile(path.join(__dirname, "../frontend", "dist", "index.html"));
   });
 }
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/service-worker.js').then((registration) => {
+    console.log("Service Worker registered with scope:", registration.scope);
+  }).catch((error) => {
+    console.error("Service Worker registration failed:", error);
+  });
+}
 
 // Start server
 server.listen(PORT, () => {

@@ -6,9 +6,6 @@ import ChatHeader from "./ChatHeader";
 import MessageInput from "./MessageInput";
 import './bubble.css';
 import MessageSkeleton from "./skeletons/MessageSkeleton";
-import { io } from "socket.io-client";  // Import socket.io-client
-
-const socket = io("http://localhost:5001","https://fullstack-chat-app-master-j115.onrender.com"); // Your backend URL
 
 const ChatContainer = () => {
   const {
@@ -18,7 +15,6 @@ const ChatContainer = () => {
     selectedUser,
     subscribeToMessages,
     unsubscribeFromMessages,
-    setMessages,
   } = useChatStore();
   const { authUser } = useAuthStore();
   const messageEndRef = useRef(null);
@@ -30,18 +26,6 @@ const ChatContainer = () => {
     return () => unsubscribeFromMessages();
   }, [selectedUser._id, getMessages, subscribeToMessages, unsubscribeFromMessages]);
 
-  // Listen for new message event
-  useEffect(() => {
-    socket.on("newMessage", (newMessage) => {
-      // Update the message list when a new message is received
-      setMessages((prevMessages) => [...prevMessages, newMessage]);
-    });
-
-    return () => {
-      socket.off("newMessage");
-    };
-  }, [setMessages]);
-
   // Scroll to the latest message when new messages are received
   useEffect(() => {
     if (messageEndRef.current && messages) {
@@ -49,6 +33,7 @@ const ChatContainer = () => {
     }
   }, [messages]);
 
+  // Show loading skeleton while messages are being fetched
   if (isMessagesLoading) {
     return (
       <div className="flex-1 flex flex-col h-full">
@@ -99,6 +84,15 @@ const ChatContainer = () => {
                 </p>
               )}
 
+              {/* Image Message */}
+              {message.image && (
+                <img
+                  src={message.image}
+                  alt="Attachment"
+                  className="w-full mt-3 rounded-md shadow-md"
+                />
+              )}
+
               {/* Audio (Voice Note) Message */}
               {message.audio && (
                 <div className="flex items-center gap-2 mt-3">
@@ -122,6 +116,7 @@ const ChatContainer = () => {
             </div>
           </div>
         ))}
+        {/* Scroll to the last message */}
         <div ref={messageEndRef}></div>
       </div>
       <MessageInput />
