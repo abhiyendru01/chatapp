@@ -1,6 +1,7 @@
 import express from 'express';
 import multer from 'multer';
-import cloudinary from '../lib/cloudinary';  // Assuming cloudinary is configured here
+console.log('Current working directory:', __dirname);
+import cloudinary from '../lib/cloudinary';
 
 const router = express.Router();
 
@@ -22,7 +23,7 @@ router.post('/upload-audio', upload.single('audio'), async (req, res) => {
       res.json({ url: result.secure_url });
     });
 
-    buffer.pipe(result); // Pipe the buffer to cloudinary for upload
+    buffer.pipe(result);
   } catch (error) {
     res.status(500).json({ message: 'Error uploading audio', error });
   }
