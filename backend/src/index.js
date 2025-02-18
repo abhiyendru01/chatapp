@@ -9,6 +9,7 @@ import authRoutes from "./routes/auth.route.js";
 import messageRoutes from "./routes/message.route.js";
 import friendRoutes from "./routes/friend.route.js";
 import { app, server } from "./lib/socket.js";
+import uploadAudioRouter from './routes/upload';
 
 dotenv.config();
 
@@ -78,6 +79,7 @@ app.use(
 app.use("/api/auth", authRoutes);
 app.use("/api/messages", messageRoutes);
 app.use("/api/friends", friendRoutes);
+app.use('/api', uploadAudioRouter); 
 
 // Serve frontend in production
 if (process.env.NODE_ENV === "production") {

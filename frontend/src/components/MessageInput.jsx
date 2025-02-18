@@ -1,17 +1,43 @@
-import { useRef, useState } from "react";
-import { useChatStore } from "../store/useChatStore";
+import { useState, useRef } from "react";
 import { Image, Send, Mic, X } from "lucide-react";
 import toast from "react-hot-toast";
+import { useChatStore } from "../store/useChatStore";
 
 const MessageInput = () => {
   const [text, setText] = useState("");
   const [imagePreview, setImagePreview] = useState(null);
   const [isRecording, setIsRecording] = useState(false);
   const [audioBlob, setAudioBlob] = useState(null);
+  // eslint-disable-next-line no-unused-vars
+  const [audioUrl, setAudioUrl] = useState(null); // URL for the uploaded audio
   const fileInputRef = useRef(null);
   const mediaRecorderRef = useRef(null);
   const audioChunksRef = useRef([]);
   const { sendMessage } = useChatStore();
+
+  // Function to send audio to the backend
+  const sendAudioToServer = async (audioBlob) => {
+    const formData = new FormData();
+    formData.append("audio", audioBlob, "voice-note.wav");  // The file is appended with a name
+
+    try {
+      const response = await fetch("http://localhost:5001/api/upload-audio", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to upload audio');
+      }
+
+      const data = await response.json();
+      return data.url; // Return the URL of the uploaded audio
+    } catch (error) {
+      console.error("Error uploading audio:", error);
+      toast.error("Failed to upload audio");
+      return null;
+    }
+  };
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -36,16 +62,23 @@ const MessageInput = () => {
     e.preventDefault();
     if (!text.trim() && !imagePreview && !audioBlob) return;
 
+    // Upload the audio to the server and get the URL
+    let audioUrl = null;
+    if (audioBlob) {
+      audioUrl = await sendAudioToServer(audioBlob); // Upload audio
+    }
+
     try {
       await sendMessage({
         text: text.trim(),
         image: imagePreview,
-        audio: audioBlob, // Include the audio blob in the message
+        audio: audioUrl, // Send the audio URL
       });
 
       setText("");
       setImagePreview(null);
       setAudioBlob(null); // Clear the audio blob after sending
+      setAudioUrl(null); // Clear the audio URL after sending
       if (fileInputRef.current) fileInputRef.current.value = "";
     } catch (error) {
       console.error("Failed to send message:", error);
@@ -111,7 +144,14 @@ const MessageInput = () => {
 
       {audioBlob && (
         <div className="mb-3 flex items-center gap-2">
-          <audio controls src={URL.createObjectURL(audioBlob)} />
+          {/* Display the waveform of the recorded audio */}
+          <div className="flex flex-col items-center w-full">
+            <div className="text-xs text-base-content/70">Voice Recording</div>
+            <div className="w-full h-2 bg-base-300/60 rounded-md mt-1">
+              {/* Use a simple bar to simulate the recording progress */}
+              <div className="w-full h-full bg-primary/70"></div>
+            </div>
+          </div>
           <button
             onClick={() => setAudioBlob(null)}
             className="btn btn-circle bg-base-300 hover:bg-base-400 text-base-content"
