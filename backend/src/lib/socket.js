@@ -22,22 +22,6 @@ const io = new Server(server, {
 
 let userSocketMap = {}; // Store userId to socketId mapping
 
-io.on("connection", (socket) => {
-  console.log(`User connected: ${socket.id}`);
-
-  socket.on("callUser", ({ userToCall, from, signal }) => {
-    io.to(userSocketMap[userToCall]).emit("incomingCall", { from, signal });
-  });
-
-  socket.on("acceptCall", ({ signal, to }) => {
-    io.to(userSocketMap[to]).emit("callAccepted", signal);
-  });
-
-  socket.on("disconnect", () => {
-    console.log(`User disconnected: ${socket.id}`);
-  });
-});
-
 // When a new user connects
 io.on("connection", (socket) => {
   console.log(`User connected: ${socket.id}`);
