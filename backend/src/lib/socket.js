@@ -40,7 +40,16 @@ io.on("connection", (socket) => {
 
   // Emit updated online users list to all connected clients
   io.emit("getOnlineUsers", Object.keys(userSocketMap));
+  socket.on("typing", (receiverId) => {
+    // Emit to the other user (receiver)
+    socket.broadcast.emit("typing", socket.handshake.query.userId);
+  });
 
+  // When a user stops typing
+  socket.on("stopTyping", (receiverId) => {
+    // Emit to the other user (receiver)
+    socket.broadcast.emit("stopTyping", socket.handshake.query.userId);
+  });
   // Handle sending messages
   socket.on("sendMessage", async ({ receiverId, message }) => {
     const senderId = socket.handshake.query.userId;

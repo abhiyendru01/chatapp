@@ -6,6 +6,7 @@ import ChatHeader from "./ChatHeader";
 import MessageInput from "./MessageInput";
 import './bubble.css';
 import MessageSkeleton from "./skeletons/MessageSkeleton";
+import socket from "../socket"; // Assuming you have this imported from socket.js
 
 const ChatContainer = () => {
   const {
@@ -15,19 +16,26 @@ const ChatContainer = () => {
     selectedUser,
     subscribeToMessages,
     unsubscribeFromMessages,
+    setMessages, // Function to update messages in the store
   } = useChatStore();
   const { authUser } = useAuthStore();
   const messageEndRef = useRef(null);
 
   useEffect(() => {
-    getMessages(selectedUser._id);
+    getMessages(selectedUser._id); // Get messages when the user is selected
     subscribeToMessages();
+    
+    socket.on("incomingMessage", (newMessage) => {
+      // Append new messages
+      setMessages((prevMessages) => [...prevMessages, newMessage]);
+    });
+
     return () => unsubscribeFromMessages();
-  }, [selectedUser._id, getMessages, subscribeToMessages, unsubscribeFromMessages]);
+  }, [selectedUser._id, getMessages, subscribeToMessages, unsubscribeFromMessages, setMessages]);
 
   useEffect(() => {
     if (messageEndRef.current && messages) {
-      messageEndRef.current.scrollIntoView({ behavior: "smooth" });
+      messageEndRef.current.scrollIntoView({ behavior: "smooth" }); // Scroll to the last message
     }
   }, [messages]);
 
@@ -85,6 +93,9 @@ const ChatContainer = () => {
                   alt="Attachment"
                   className="w-full mt-3 rounded-md shadow-md"
                 />
+              )}
+              {message.audio && (
+                <audio controls src={message.audio} className="w-full mt-3 rounded-md shadow-md" />
               )}
               <div
                 className={`mt-1 text-xs ${

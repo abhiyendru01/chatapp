@@ -2,14 +2,17 @@ import { useState, useRef } from "react";
 import { Image, Send, Mic, X } from "lucide-react";
 import toast from "react-hot-toast";
 import { useChatStore } from "../store/useChatStore";
+import { io } from "socket.io-client";
+
+// Socket for real-time communication
+io();
 
 const MessageInput = () => {
   const [text, setText] = useState("");
   const [imagePreview, setImagePreview] = useState(null);
   const [isRecording, setIsRecording] = useState(false);
   const [audioBlob, setAudioBlob] = useState(null);
-  // eslint-disable-next-line no-unused-vars
-  const [audioUrl, setAudioUrl] = useState(null); // URL for the uploaded audio
+  const [, setAudioUrl] = useState(null); // URL for the uploaded audio
   const fileInputRef = useRef(null);
   const mediaRecorderRef = useRef(null);
   const audioChunksRef = useRef([]);
