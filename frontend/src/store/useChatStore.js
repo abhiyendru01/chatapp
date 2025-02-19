@@ -16,6 +16,8 @@ export const useChatStore = create((set, get) => ({
   addContact: (userId) => set((state) => ({ contacts: [...state.contacts, userId] })),
   isContact: (userId) => get().contacts.includes(userId),
 
+  
+
   getUsers: async () => {
     set({ isUsersLoading: true });
     try {

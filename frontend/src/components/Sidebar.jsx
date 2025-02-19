@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { useChatStore } from "../store/useChatStore";
 import { Users } from "lucide-react";
+import { useChatStore } from "../store/useChatStore";
 import { useAuthStore } from "../store/useAuthStore";
 
 const Sidebar = () => {
@@ -13,20 +13,22 @@ const Sidebar = () => {
     getUsers();
   }, [getUsers]);
 
+  // Sort and filter users based on last interaction and search query
   const sortedAndFilteredUsers = users
-    .sort((a, b) => {
-      const timeA = new Date(a.lastInteraction).getTime();
-      const timeB = new Date(b.lastInteraction).getTime();
-      return timeB - timeA; // Sort descending by lastInteraction
-    })
-    .filter((user) => {
-      const matchesOnlineStatus =
-        !showOnlineOnly || onlineUsers.includes(user._id);
-      const matchesSearchQuery = user.fullName
-        .toLowerCase()
-        .includes(searchQuery.toLowerCase());
-      return matchesOnlineStatus && matchesSearchQuery;
-    });
+  .sort((a, b) => {
+    const timeA = a.lastMessagedAt ? new Date(a.lastMessagedAt).getTime() : 0;
+    const timeB = b.lastMessagedAt ? new Date(b.lastMessagedAt).getTime() : 0;
+    return timeB - timeA; // Sort descending by last interaction
+  })
+  .filter((user) => {
+    const matchesOnlineStatus =
+      !showOnlineOnly || onlineUsers.includes(user._id);
+    const matchesSearchQuery = user.fullName
+      .toLowerCase()
+      .includes(searchQuery.toLowerCase());
+    return matchesOnlineStatus && matchesSearchQuery;
+  });
+
 
   return (
     <aside className="h-full w-full lg:w-72 border-r border-base-300 bg-base-100 flex flex-col">
@@ -50,32 +52,29 @@ const Sidebar = () => {
           </span>
         </div>
         <div className="w-full p-3 lg:px-3 lg:py-2">
-        <label className="input p-5 md:p-3  input-bordered input-md border-primary/40 border-4 rounded-2xl px-5 py-5 flex items-center gap-2 w-full backdrop-blur-sm">
-          <input
-            type="text"
-            className="grow placeholder:text-base-content"
-            placeholder="Search..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 16 16"
-            fill="currentColor"
-            className="h-4 w-4 opacity-70"
-          >
-            <path
-              fillRule="evenodd"
-              d="M9.965 11.026a5 5 0 1 1 1.06-1.06l2.755 2.754a.75.75 0 1 1-1.06 1.06l-2.755-2.754ZM10.5 7a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z"
-              clipRule="evenodd"
+          <label className="input p-5 md:p-3 input-bordered input-md border-primary/40 border-4 rounded-2xl px-5 py-5 flex items-center gap-2 w-full backdrop-blur-sm">
+            <input
+              type="text"
+              className="grow placeholder:text-base-content"
+              placeholder="Search..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
             />
-          </svg>
-        </label>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 16 16"
+              fill="currentColor"
+              className="h-4 w-4 opacity-70"
+            >
+              <path
+                fillRule="evenodd"
+                d="M9.965 11.026a5 5 0 1 1 1.06-1.06l2.755 2.754a.75.75 0 1 1-1.06 1.06l-2.755-2.754ZM10.5 7a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z"
+                clipRule="evenodd"
+              />
+            </svg>
+          </label>
+        </div>
       </div>
-      </div>
-
-      {/* Search Bar */}
-     
 
       {/* Users List */}
       <div className="overflow-y-auto w-full py-3 px-3 flex-grow space-y-1">
