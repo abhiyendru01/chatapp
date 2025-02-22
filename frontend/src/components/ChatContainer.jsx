@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { useChatStore } from "../store/useChatStore";
 import { useAuthStore } from "../store/useAuthStore";
 import { formatMessageTime } from "../lib/utils";
@@ -6,9 +6,7 @@ import ChatHeader from "./ChatHeader";
 import MessageInput from "./MessageInput";
 import './bubble.css';
 import MessageSkeleton from "./skeletons/MessageSkeleton";
-import { io } from "socket.io-client";
-
-const socket = io("https://fullstack-chat-app-master-j115.onrender.com");  // Replace with your backend URL
+import socket from "../socket"; // Assuming you have this imported from socket.js
 
 const ChatContainer = () => {
   const {
@@ -16,42 +14,28 @@ const ChatContainer = () => {
     getMessages,
     isMessagesLoading,
     selectedUser,
+    subscribeToMessages,
     unsubscribeFromMessages,
-    setMessages, // Add this line to import the setMessages function
+    setMessages, // Function to update messages in the store
   } = useChatStore();
   const { authUser } = useAuthStore();
   const messageEndRef = useRef(null);
 
-  const [newMessage, setNewMessage] = useState(null);
-
   useEffect(() => {
-    // Load the initial set of messages
-    getMessages(selectedUser._id);
-
-    // Subscribe to new messages
-    socket.on("incomingMessage", (message) => {
-      setNewMessage(message);
+    getMessages(selectedUser._id); // Get messages when the user is selected
+    subscribeToMessages();
+    
+    socket.on("incomingMessage", (newMessage) => {
+      // Append new messages
+      setMessages((prevMessages) => [...prevMessages, newMessage]);
     });
 
-    // Clean up subscription when component unmounts
-    return () => {
-      socket.off("incomingMessage");
-      unsubscribeFromMessages();
-    };
-  }, [selectedUser._id, getMessages, unsubscribeFromMessages]);
-
-  useEffect(() => {
-    // Add the new message to the state
-    if (newMessage) {
-      // You can customize this logic based on your current state management
-      // Adding the new message at the start of the array
-      setMessages((prevMessages) => [newMessage, ...prevMessages]);
-    }
-  }, [newMessage]);
+    return () => unsubscribeFromMessages();
+  }, [selectedUser._id, getMessages, subscribeToMessages, unsubscribeFromMessages, setMessages]);
 
   useEffect(() => {
     if (messageEndRef.current && messages) {
-      messageEndRef.current.scrollIntoView({ behavior: "smooth" });
+      messageEndRef.current.scrollIntoView({ behavior: "smooth" }); // Scroll to the last message
     }
   }, [messages]);
 
@@ -109,6 +93,9 @@ const ChatContainer = () => {
                   alt="Attachment"
                   className="w-full mt-3 rounded-md shadow-md"
                 />
+              )}
+              {message.audio && (
+                <audio controls src={message.audio} className="w-full mt-3 rounded-md shadow-md" />
               )}
               <div
                 className={`mt-1 text-xs ${
