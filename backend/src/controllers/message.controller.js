@@ -3,6 +3,8 @@ import Message from "../models/message.model.js";
 import cloudinary from "../lib/cloudinary.js";
 import { getReceiverSocketId, io } from "../lib/socket.js";
 
+
+
 export const getUsersForSidebar = async (req, res) => {
   try {
     const loggedInUserId = req.user._id;
@@ -28,7 +30,7 @@ export const getMessages = async (req, res) => {
         { senderId: myId, receiverId: userToChatId },
         { senderId: userToChatId, receiverId: myId },
       ],
-    }).sort({ createdAt: -1 });  // Sort messages in descending order of creation time
+    }).sort({ createdAt: 1 });  // Sort messages in ascending order
 
     res.status(200).json(messages);  // Return the fetched messages
   } catch (error) {
@@ -45,12 +47,10 @@ export const sendMessage = async (req, res) => {
 
     let imageUrl;
     if (image) {
-      // Upload image to Cloudinary if provided
       const uploadResponse = await cloudinary.uploader.upload(image);
       imageUrl = uploadResponse.secure_url;
     }
 
-    // Create a new message instance
     const newMessage = new Message({
       senderId,
       receiverId,
@@ -58,15 +58,21 @@ export const sendMessage = async (req, res) => {
       image: imageUrl,
     });
 
-    await newMessage.save();  // Save the message to the database
+    await newMessage.save();
 
     // Retrieve the socket ID of the receiver to send the message in real-time
     const receiverSocketId = getReceiverSocketId(receiverId);
     if (receiverSocketId) {
-      io.to(receiverSocketId).emit("newMessage", newMessage);  // Send the message via socket
+      io.to(receiverSocketId).emit("newMessage", newMessage); // Send the message to the receiver
     }
 
-    res.status(201).json(newMessage);  // Return the saved message
+    // Retrieve the socket ID of the sender to send the message in real-time
+    const senderSocketId = getReceiverSocketId(senderId);
+    if (senderSocketId) {
+      io.to(senderSocketId).emit("newMessage", newMessage); // Send the message to the sender
+    }
+
+    res.status(201).json(newMessage);
   } catch (error) {
     console.log("Error in sendMessage controller: ", error.message);
     res.status(500).json({ error: "Internal server error" });

@@ -6,7 +6,6 @@ import ChatHeader from "./ChatHeader";
 import MessageInput from "./MessageInput";
 import './bubble.css';
 import MessageSkeleton from "./skeletons/MessageSkeleton";
-import socket from "../socket"; // Assuming you have this imported from socket.js
 
 const ChatContainer = () => {
   const {
@@ -16,29 +15,27 @@ const ChatContainer = () => {
     selectedUser,
     subscribeToMessages,
     unsubscribeFromMessages,
-    setMessages, // Function to update messages in the store
   } = useChatStore();
   const { authUser } = useAuthStore();
   const messageEndRef = useRef(null);
-
+  console.log("Messages:", messages);
+  // Fetch messages and subscribe to real-time updates
   useEffect(() => {
-    getMessages(selectedUser._id); // Get messages when the user is selected
-    subscribeToMessages();
-    
-    socket.on("incomingMessage", (newMessage) => {
-      // Append new messages
-      setMessages((prevMessages) => [...prevMessages, newMessage]);
-    });
-
-    return () => unsubscribeFromMessages();
-  }, [selectedUser._id, getMessages, subscribeToMessages, unsubscribeFromMessages, setMessages]);
-
+    if (selectedUser?._id) {
+      getMessages(selectedUser._id); // Fetch messages when a user is selected
+      subscribeToMessages(); // Subscribe to real-time messages
+    }
+  
+    return () => unsubscribeFromMessages(); // Cleanup on unmount
+  }, [selectedUser?._id, getMessages, subscribeToMessages, unsubscribeFromMessages]);
+  // Scroll to the latest message
   useEffect(() => {
     if (messageEndRef.current && messages) {
-      messageEndRef.current.scrollIntoView({ behavior: "smooth" }); // Scroll to the last message
+      messageEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [messages]);
 
+  // Loading state
   if (isMessagesLoading) {
     return (
       <div className="flex-1 flex flex-col h-full">
@@ -47,6 +44,11 @@ const ChatContainer = () => {
         <MessageInput />
       </div>
     );
+  }
+
+  // Fallback if no user is selected
+  if (!selectedUser) {
+    return <div>Select a user to start chatting.</div>;
   }
 
   return (

@@ -1,8 +1,17 @@
-// src/socket.js or similar file
 import { io } from "socket.io-client";
 
-const socket = io("http://localhost:5001", "https://fullstack-chat-app-master-j115.onrender.com",{
-  withCredentials: true, // Enables cookies for session management
+const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:5001";
+const socket = io(backendUrl, {
+  withCredentials: true,
+});
+
+// Log connection status
+socket.on("connect", () => {
+  console.log("Connected to Socket.IO server");
+});
+
+socket.on("disconnect", () => {
+  console.log("Disconnected from Socket.IO server");
 });
 
 export default socket;

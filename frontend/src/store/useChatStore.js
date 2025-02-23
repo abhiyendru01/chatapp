@@ -39,7 +39,6 @@ export const useChatStore = create((set, get) => ({
     try {
       const res = await axiosInstance.get(`/messages/${userId}`);
       set({ messages: res.data });
-
       const updatedUsers = get().users.map((user) =>
         user._id === userId ? { ...user, lastMessagedAt: new Date().toISOString() } : user
       );
@@ -70,20 +69,17 @@ export const useChatStore = create((set, get) => ({
     const { selectedUser } = get();
     const socket = useAuthStore.getState().socket;
     if (!selectedUser || !socket) return;
-
+  
+    // Listen for new messages
     socket.on("newMessage", (newMessage) => {
-      if (newMessage.senderId === selectedUser._id) {
-        set({ messages: [...get().messages, newMessage] });
-
-        const updatedUsers = get().users.map((user) =>
-          user._id === newMessage.senderId ? { ...user, lastMessagedAt: newMessage.timestamp } : user
-        );
-        set({ users: updatedUsers });
+      console.log("New message received:", newMessage); // Debugging
+  
+      // Check if the message is from the selected user or the current user
+      if (newMessage.senderId === selectedUser._id || newMessage.receiverId === selectedUser._id) {
+        set((state) => ({ messages: [...state.messages, newMessage] })); // Append new message
       }
     });
   },
-
-    
   getFriends: async () => {
     try {
       const res = await axiosInstance.get("/api/friends/friends"); // Ensure correct API path
