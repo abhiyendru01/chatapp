@@ -49,6 +49,26 @@ export function getReceiverSocketId(receiverId) {
   return userSocketMap[receiverId] || null;
 }
 
+
+
+io.on("connection", (socket) => {
+  console.log(`User connected: ${socket.id}`);
+
+  const userId = socket.handshake.query.userId;
+  if (userId) {
+    userSocketMap[userId] = socket.id;
+    console.log(`User ${userId} is now online.`);
+    io.emit("getOnlineUsers", Object.keys(userSocketMap));
+  }
+
+  socket.on("disconnect", () => {
+    if (userId) {
+      console.log(`User ${userId} disconnected.`);
+      delete userSocketMap[userId];
+      io.emit("getOnlineUsers", Object.keys(userSocketMap));
+    }
+  });
+});
 // When a new user connects
 io.on("connection", (socket) => {
   console.log(`User connected: ${socket.id}`);
