@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useChatStore } from "../store/useChatStore";
 import { useAuthStore } from "../store/useAuthStore";
 import { formatMessageTime } from "../lib/utils";
@@ -6,6 +6,12 @@ import ChatHeader from "./ChatHeader";
 import MessageInput from "./MessageInput";
 import './bubble.css';
 import MessageSkeleton from "./skeletons/MessageSkeleton";
+<<<<<<< HEAD
+=======
+import { io } from "socket.io-client";
+
+const socket = io("https://fullstack-chat-app-master-j115.onrender.com");  // Replace with your backend URL
+>>>>>>> 463870fe3fef25d6abc4471f185aa92dbe9e9dd1
 
 const ChatContainer = () => {
   const {
@@ -13,8 +19,8 @@ const ChatContainer = () => {
     getMessages,
     isMessagesLoading,
     selectedUser,
-    subscribeToMessages,
     unsubscribeFromMessages,
+<<<<<<< HEAD
   } = useChatStore();
   const { authUser } = useAuthStore();
   const messageEndRef = useRef(null);
@@ -29,6 +35,40 @@ const ChatContainer = () => {
     return () => unsubscribeFromMessages(); // Cleanup on unmount
   }, [selectedUser?._id, getMessages, subscribeToMessages, unsubscribeFromMessages]);
   // Scroll to the latest message
+=======
+    setMessages, // Add this line to import the setMessages function
+  } = useChatStore();
+  const { authUser } = useAuthStore();
+  const messageEndRef = useRef(null);
+
+  const [newMessage, setNewMessage] = useState(null);
+
+  useEffect(() => {
+    // Load the initial set of messages
+    getMessages(selectedUser._id);
+
+    // Subscribe to new messages
+    socket.on("incomingMessage", (message) => {
+      setNewMessage(message);
+    });
+
+    // Clean up subscription when component unmounts
+    return () => {
+      socket.off("incomingMessage");
+      unsubscribeFromMessages();
+    };
+  }, [selectedUser._id, getMessages, unsubscribeFromMessages]);
+
+  useEffect(() => {
+    // Add the new message to the state
+    if (newMessage) {
+      // You can customize this logic based on your current state management
+      // Adding the new message at the start of the array
+      setMessages((prevMessages) => [newMessage, ...prevMessages]);
+    }
+  }, [newMessage]);
+
+>>>>>>> 463870fe3fef25d6abc4471f185aa92dbe9e9dd1
   useEffect(() => {
     if (messageEndRef.current && messages) {
       messageEndRef.current.scrollIntoView({ behavior: "smooth" });
@@ -95,9 +135,6 @@ const ChatContainer = () => {
                   alt="Attachment"
                   className="w-full mt-3 rounded-md shadow-md"
                 />
-              )}
-              {message.audio && (
-                <audio controls src={message.audio} className="w-full mt-3 rounded-md shadow-md" />
               )}
               <div
                 className={`mt-1 text-xs ${
