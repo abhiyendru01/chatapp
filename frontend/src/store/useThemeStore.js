@@ -1,6 +1,5 @@
 import { create } from "zustand";
 
-// Theme color map for updating manifest.json
 const themeColorMap = {
   light: "#ffffff",
   dark: "#1d232a",
@@ -36,9 +35,20 @@ const themeColorMap = {
   sunset: "#0b151b",
 };
 
-// Function to update manifest.json dynamically
+// ✅ Move the function ABOVE `useThemeStore`
 const updateManifestTheme = (theme) => {
-  const themeColor = themeColorMap[theme] || themeColorMap['light']; // Default to light theme if not found
+  const themeColor = themeColorMap[theme] || themeColorMap["light"];
+
+  // 🔥 Update the <meta name="theme-color">
+  let themeColorMeta = document.querySelector('meta[name="theme-color"]');
+  if (!themeColorMeta) {
+    themeColorMeta = document.createElement("meta");
+    themeColorMeta.setAttribute("name", "theme-color");
+    document.head.appendChild(themeColorMeta);
+  }
+  themeColorMeta.setAttribute("content", themeColor);
+
+  // Update manifest.json dynamically
   const manifest = {
     short_name: "Stardust",
     name: "Chat Application by Abhiyendru",
@@ -55,20 +65,21 @@ const updateManifestTheme = (theme) => {
   const stringManifest = JSON.stringify(manifest);
   const blob = new Blob([stringManifest], { type: "application/json" });
   const manifestURL = URL.createObjectURL(blob);
-  const timestamp = new Date().getTime(); 
+  const timestamp = new Date().getTime();
   const manifestLink = document.querySelector('link[rel="manifest"]');
   if (manifestLink) {
     manifestLink.setAttribute("href", `${manifestURL}?v=${timestamp}`);
   }
 };
 
+// ✅ Ensure this function is AFTER `updateManifestTheme`
 export const useThemeStore = create((set) => ({
   theme: localStorage.getItem("chat-theme") || "nord",
   setTheme: (theme) => {
     localStorage.setItem("chat-theme", theme);
-    updateManifestTheme(theme);
-    
-    document.documentElement.setAttribute("data-theme", theme); 
+    updateManifestTheme(theme); // 🔥 No more red line
+
+    document.documentElement.setAttribute("data-theme", theme);
     
     set({ theme });
   },
