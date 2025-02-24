@@ -12,8 +12,8 @@ const AudioMessage = ({ audioSrc, isSender = true }) => {
 
     wavesurfer.current = WaveSurfer.create({
       container: waveformRef.current,
-      waveColor: isSender ? "text-primary-content" : "text-secondary-content", // blue-300 for sender, blue-200 for receiver
-      progressColor: "chat-bubble-accent", // blue-600
+      waveColor: isSender ? "text-primary-content" : "text-base-content", 
+      progressColor: "chat-bubble-accent", 
       barWidth: 2,
       barGap: 3,
       barRadius: 3,
