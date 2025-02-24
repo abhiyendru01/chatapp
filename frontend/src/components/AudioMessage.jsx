@@ -12,8 +12,8 @@ const AudioMessage = ({ audioSrc, isSender = true }) => {
 
     wavesurfer.current = WaveSurfer.create({
       container: waveformRef.current,
-      waveColor: isSender ? "text-primary-content" : "text-base-content", 
-      progressColor: "chat-bubble-accent", 
+      waveColor: isSender ? "#ffffff" : "#333333", // Ensure proper contrast
+      progressColor: "#ff7f50",
       barWidth: 2,
       barGap: 3,
       barRadius: 3,
@@ -53,12 +53,17 @@ const AudioMessage = ({ audioSrc, isSender = true }) => {
   };
 
   return (
-    <div className={`chat ${isSender ? "chat-end" : "chat-start"}`}>
-      <div className={` rounded ${isSender ? "chat-bubble-primary " : "chat-bubble-secondary"} 
-        flex items-center gap-4 min-w-[300px] max-w-[500px] p-2`}>
+    <div className={`chat ${isSender ? "chat-end" : "chat-start"} w-full max-w-[90%] sm:max-w-[75%]`}>
+      <div className={`
+        rounded-lg p-3 shadow-md flex items-center gap-3 
+        ${isSender ? "bg-primary text-primary-content" : "bg-base-300 text-base-content"}
+        w-full max-w-[350px] sm:max-w-[400px] md:max-w-[450px]
+      `}>
+        {/* Play/Pause Button */}
         <button
           onClick={togglePlay}
-          className={`btn btn-circle btn-sm ${isSender ? "btn-ghost" : "btn-primary"} 
+          className={`btn btn-circle btn-sm flex items-center justify-center 
+            ${isSender ? "btn-ghost" : "btn-primary"} 
             hover:bg-opacity-90 transition-all duration-200`}
           aria-label={isPlaying ? "Pause" : "Play"}
         >
@@ -74,11 +79,13 @@ const AudioMessage = ({ audioSrc, isSender = true }) => {
           )}
         </button>
 
-        <div className="flex-1 h-10">
+        {/* Waveform */}
+        <div className="flex-1 h-10 min-w-[100px]">
           <div ref={waveformRef} className="w-full" />
         </div>
 
-        <span className="text-sm opacity-90 min-w-[40px] text-right">
+        {/* Duration */}
+        <span className="text-xs font-medium opacity-90 min-w-[40px] text-right">
           {duration}
         </span>
       </div>
