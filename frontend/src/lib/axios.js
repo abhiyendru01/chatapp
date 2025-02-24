@@ -8,7 +8,7 @@ export const axiosInstance = axios.create({
     : API_CONFIG.PRODUCTION_URL,
   withCredentials: false,  // No need for credentials since we're using localStorage
   headers: {
-    "Content-Type": "application/json",
+    "Content-Type": "application/json",  // Default for JSON requests
   },
 });
 
@@ -18,6 +18,12 @@ axiosInstance.interceptors.request.use((config) => {
   if (token) {
     config.headers["Authorization"] = `Bearer ${token}`;
   }
+
+  // Check if the request is a FormData (for file uploads)
+  if (config.data instanceof FormData) {
+    config.headers["Content-Type"] = "multipart/form-data"; // Set content-type for file uploads
+  }
+
   return config;
 }, (error) => {
   return Promise.reject(error);

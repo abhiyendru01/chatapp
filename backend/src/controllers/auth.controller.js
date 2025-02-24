@@ -91,43 +91,37 @@ export const logout = (req, res) => {
 
 export const updateProfile = async (req, res) => {
   try {
-    const { profilePic, fullName } = req.body; // Get other profile data
+    const { profilePic, fullName } = req.body; // Get profile data
     const userId = req.user._id; // Get the current user's ID
 
-    // Ensure a profile pic is provided
-    if (!profilePic) {
-      return res.status(400).json({ message: "Profile pic is required" });
+    let uploadedImageUrl = null;
+
+    if (profilePic) {
+      const uploadResponse = await cloudinary.uploader.upload(profilePic, {
+        resource_type: "image",
+        folder: "profile_pictures",
+      });
+
+      uploadedImageUrl = uploadResponse.secure_url;
     }
 
-    // Upload the image to Cloudinary
-    const uploadResponse = await cloudinary.uploader.upload_stream(
-      { resource_type: "image", folder: "images" },
-      async (error, result) => {
-        if (error) {
-          return res.status(500).json({ message: "Cloudinary upload failed", error });
-        }
-
-        // Update the user's profile with the new profile picture URL
-        const updatedUser = await User.findByIdAndUpdate(
-          userId,
-          {
-            fullName: fullName || "", // Update full name if provided
-            profilePic: result.secure_url, // Cloudinary URL for the profile picture
-          },
-          { new: true }
-        );
-
-        return res.status(200).json(updatedUser);
-      }
+    // Update the user in MongoDB
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      {
+        fullName: fullName || "", // Update name if provided
+        profilePic: uploadedImageUrl || undefined, // Only update if a new image was uploaded
+      },
+      { new: true }
     );
 
-    // Pipe the file to Cloudinary upload stream
-    req.file.stream.pipe(uploadResponse);
+    res.status(200).json(updatedUser);
   } catch (error) {
-    console.error("Error in update profile:", error.message);
-    res.status(500).json({ message: "Internal server error" });
+    console.error("Error in updateProfile:", error.message);
+    res.status(500).json({ message: "Internal Server Error" });
   }
 };
+
 
 export const checkAuth = (req, res) => {
   try {

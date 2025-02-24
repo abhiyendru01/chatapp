@@ -26,7 +26,7 @@ const allowedOrigins = [
 // Middleware setup
 app.use(express.json());
 app.use(cookieParser());
-
+app.use(express.urlencoded({ extended: true }));
 // CORS setup to allow requests from allowed origins
 app.use(
   cors({
@@ -93,3 +93,4 @@ server.listen(PORT, () => {
   console.log(`Server is running on PORT: ${PORT}`);
   connectDB();
 });
+

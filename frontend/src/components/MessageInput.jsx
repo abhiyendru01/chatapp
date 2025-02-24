@@ -19,29 +19,31 @@ const MessageInput = () => {
   const { sendMessage } = useChatStore();
 
   // Function to send audio to the backend
-  const sendAudioToServer = async (audioBlob) => {
+  const sendAudioToServer = async (audioFile) => {
     const formData = new FormData();
-    formData.append("audio", audioBlob, "voice-note.wav");  // The file is appended with a name
-
+    formData.append("audio", audioFile);
+  
     try {
-      const response = await fetch("http://localhost:5001/api/upload-audio", {
+      const response = await fetch("http://localhost:5001/api/messages/upload-audio", {
         method: "POST",
         body: formData,
       });
-
+  
       if (!response.ok) {
-        throw new Error('Failed to upload audio');
+        throw new Error(`HTTP error! Status: ${response.status}`);
       }
-
+  
       const data = await response.json();
-      return data.url; // Return the URL of the uploaded audio
+      console.log("Audio uploaded successfully:", data.url);
+      return data.url;
     } catch (error) {
       console.error("Error uploading audio:", error);
-      toast.error("Failed to upload audio");
       return null;
     }
   };
+  
 
+  // Handle image selection
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (!file.type.startsWith("image/")) {
@@ -64,20 +66,20 @@ const MessageInput = () => {
   const handleSendMessage = async (e) => {
     e.preventDefault();
     if (!text.trim() && !imagePreview && !audioBlob) return;
-
+  
     // Upload the audio to the server and get the URL
     let audioUrl = null;
     if (audioBlob) {
       audioUrl = await sendAudioToServer(audioBlob); // Upload audio
     }
-
+  
     try {
       await sendMessage({
         text: text.trim(),
         image: imagePreview,
         audio: audioUrl, // Send the audio URL
       });
-
+  
       setText("");
       setImagePreview(null);
       setAudioBlob(null); // Clear the audio blob after sending
@@ -117,9 +119,9 @@ const MessageInput = () => {
 
   const handleVoiceNoteClick = () => {
     if (isRecording) {
-      stopRecording();
+      stopRecording(); // Stop recording if already recording
     } else {
-      startRecording();
+      startRecording(); // Start recording
     }
   };
 

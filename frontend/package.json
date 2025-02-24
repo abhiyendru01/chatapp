@@ -24,6 +24,8 @@
     "simple-peer": "^9.11.1",
     "socket.io-client": "^4.8.1",
     "sweetalert2": "^11.15.9",
+    "twilio": "^5.4.5",
+    "wavesurfer.js": "^7.9.1",
     "zustand": "^5.0.1"
   },
   "devDependencies": {

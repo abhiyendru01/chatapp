@@ -14,9 +14,13 @@ const messageSchema = new mongoose.Schema(
     },
     text: {
       type: String,
+      trim: true, 
     },
     image: {
       type: String,
+    },
+    audio: {
+      type: String, 
     },
   },
   { timestamps: true }

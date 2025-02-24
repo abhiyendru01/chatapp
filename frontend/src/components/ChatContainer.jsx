@@ -4,8 +4,9 @@ import { useAuthStore } from "../store/useAuthStore";
 import { formatMessageTime } from "../lib/utils";
 import ChatHeader from "./ChatHeader";
 import MessageInput from "./MessageInput";
-import './bubble.css';
 import MessageSkeleton from "./skeletons/MessageSkeleton";
+import AudioMessage from "./AudioMessage";
+import "./bubble.css";
 
 const ChatContainer = () => {
   const {
@@ -16,21 +17,25 @@ const ChatContainer = () => {
     subscribeToMessages,
     unsubscribeFromMessages,
   } = useChatStore();
+
   const { authUser } = useAuthStore();
   const messageEndRef = useRef(null);
-  console.log("Messages:", messages);
+
+  console.log("Messages:", messages); // Debugging: Check if messages contain audio URLs
+
   // Fetch messages and subscribe to real-time updates
   useEffect(() => {
     if (selectedUser?._id) {
-      getMessages(selectedUser._id); // Fetch messages when a user is selected
-      subscribeToMessages(); // Subscribe to real-time messages
+      getMessages(selectedUser._id);
+      subscribeToMessages();
     }
-  
-    return () => unsubscribeFromMessages(); // Cleanup on unmount
-  }, [selectedUser?._id, getMessages, subscribeToMessages, unsubscribeFromMessages]);
-  // Scroll to the latest message
+
+    return () => unsubscribeFromMessages();
+  }, [selectedUser?._id]); // ✅ Removed unnecessary dependencies
+
+  // Scroll to the latest message when new messages arrive
   useEffect(() => {
-    if (messageEndRef.current && messages) {
+    if (messageEndRef.current) {
       messageEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [messages]);
@@ -48,70 +53,72 @@ const ChatContainer = () => {
 
   // Fallback if no user is selected
   if (!selectedUser) {
-    return <div>Select a user to start chatting.</div>;
+    return <div className="flex items-center justify-center h-full text-gray-500">Select a user to start chatting.</div>;
   }
 
   return (
     <div className="flex-1 flex flex-col h-full">
       <ChatHeader />
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
-        {messages.map((message) => (
-          <div
-            key={message._id}
-            className={`chat ${message.senderId === authUser._id ? "chat-end" : "chat-start"}`}
-          >
-            <div className="chat-image avatar">
-              <div className="w-12 h-12 rounded-full border-2 border-primary">
-                <img
-                  src={
-                    message.senderId === authUser._id
-                      ? authUser.profilePic || "/avatar.png"
-                      : selectedUser.profilePic || "/avatar.png"
-                  }
-                  alt="profile pic"
-                />
-              </div>
-            </div>
-
+        {messages.length > 0 ? (
+          messages.map((message) => (
             <div
-              className={`${
-                message.senderId === authUser._id ? "bg-primary" : "bg-base-300/100"
-              } p-4 rounded-lg shadow-lg transition duration-300 ease-in-out hover:shadow-xl w-max max-w-full`}
+              key={message._id}
+              className={`chat ${message.senderId === authUser._id ? "chat-end" : "chat-start"}`}
             >
-              {message.text && (
-                <p
-                  className={`${
+              <div className="chat-image avatar">
+                <div className="w-12 h-12 rounded-full border-2 border-primary">
+                  <img
+                    src={
+                      message.senderId === authUser._id
+                        ? authUser.profilePic || "/avatar.png"
+                        : selectedUser.profilePic || "/avatar.png"
+                    }
+                    alt="profile pic"
+                  />
+                </div>
+              </div>
+
+              <div
+                className={`${
+                  message.senderId === authUser._id ? "bg-primary" : "bg-base-300/100"
+                } p-4 rounded-lg shadow-lg transition duration-300 ease-in-out hover:shadow-xl w-max max-w-full`}
+              >
+                {message.text && (
+                  <p
+                    className={`${
+                      message.senderId === authUser._id
+                        ? "text-primary-content"
+                        : "text-base-content"
+                    }`}
+                  >
+                    {message.text}
+                  </p>
+                )}
+                {message.image && (
+                  <img
+                    src={message.image}
+                    alt="Attachment"
+                    className="w-full mt-3 rounded-md shadow-md"
+                  />
+                )}
+                {message.audio && <AudioMessage audioSrc={message.audio} />}
+                
+                <div
+                  className={`mt-1 text-xs ${
                     message.senderId === authUser._id
-                      ? "text-primary-content"
-                      : "text-base-content"
+                      ? "text-primary-content/70"
+                      : "text-base-content/60"
                   }`}
                 >
-                  {message.text}
-                </p>
-              )}
-              {message.image && (
-                <img
-                  src={message.image}
-                  alt="Attachment"
-                  className="w-full mt-3 rounded-md shadow-md"
-                />
-              )}
-              {message.audio && (
-                <audio controls src={message.audio} className="w-full mt-3 rounded-md shadow-md" />
-              )}
-              <div
-                className={`mt-1 text-xs ${
-                  message.senderId === authUser._id
-                    ? "text-primary-content/70"
-                    : "text-base-content/60"
-                }`}
-              >
-                <time className="text-[10px]">{formatMessageTime(message.createdAt)}</time>
+                  <time className="text-[10px]">{formatMessageTime(message.createdAt)}</time>
+                </div>
               </div>
             </div>
-          </div>
-        ))}
-        {/* Ensure scrolling to the last message */}
+          ))
+        ) : (
+          <p className="text-center text-gray-500">No messages yet. Start the conversation!</p>
+        )}
         <div ref={messageEndRef}></div>
       </div>
       <MessageInput />
