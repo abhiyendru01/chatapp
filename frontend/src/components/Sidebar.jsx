@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Users } from "lucide-react";
 import { useChatStore } from "../store/useChatStore";
 import { useAuthStore } from "../store/useAuthStore";
+import Navbar from "./Navbar"; // ✅ Import Navbar
 
 const Sidebar = () => {
   const { getUsers, users, selectedUser, setSelectedUser } = useChatStore();
@@ -15,23 +16,27 @@ const Sidebar = () => {
 
   // Sort and filter users based on last interaction and search query
   const sortedAndFilteredUsers = users
-  .sort((a, b) => {
-    const timeA = a.lastMessagedAt ? new Date(a.lastMessagedAt).getTime() : 0;
-    const timeB = b.lastMessagedAt ? new Date(b.lastMessagedAt).getTime() : 0;
-    return timeB - timeA; // Sort descending by last interaction
-  })
-  .filter((user) => {
-    const matchesOnlineStatus =
-      !showOnlineOnly || onlineUsers.includes(user._id);
-    const matchesSearchQuery = user.fullName
-      .toLowerCase()
-      .includes(searchQuery.toLowerCase());
-    return matchesOnlineStatus && matchesSearchQuery;
-  });
-
+    .sort((a, b) => {
+      const timeA = a.lastMessagedAt ? new Date(a.lastMessagedAt).getTime() : 0;
+      const timeB = b.lastMessagedAt ? new Date(b.lastMessagedAt).getTime() : 0;
+      return timeB - timeA; // Sort descending by last interaction
+    })
+    .filter((user) => {
+      const matchesOnlineStatus =
+        !showOnlineOnly || onlineUsers.includes(user._id);
+      const matchesSearchQuery = user.fullName
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase());
+      return matchesOnlineStatus && matchesSearchQuery;
+    });
 
   return (
     <aside className="h-full w-full lg:w-72 border-r border-base-300 bg-base-100 flex flex-col">
+      {/* ✅ Navbar is added here but only visible on desktop */}
+      <div className="hidden lg:block">
+        <Navbar />
+      </div>
+
       <div className="border-b-2 rounded-b-3xl border-primary/40 w-full p-5 bg-primary/20 backdrop-blur">
         <div className="flex items-center gap-2">
           <Users className="size-6" />

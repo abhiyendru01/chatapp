@@ -98,14 +98,15 @@ const ChatContainer = () => {
 
                 {/* Handling large image sizes */}
                 {message.image && (
-                  <div className="overflow-hidden rounded-md shadow-md mt-3">
-                    <img
-                      src={message.image}
-                      alt="Attachment"
-                      className="w-full h-auto max-w-[300px] sm:max-w-[400px] md:max-w-[500px] lg:max-w-[600px] object-cover"
-                    />
-                  </div>
-                )}
+  <div className="overflow-hidden rounded-md shadow-md mt-3 max-w-[80%]">
+    <img
+      src={message.image}
+      alt="Attachment"
+      className="w-full h-auto max-w-[250px] sm:max-w-[300px] md:max-w-[350px] lg:max-w-[400px] object-contain rounded-lg"
+    />
+  </div>
+)}
+
 
                 {message.audio && <AudioMessage audioSrc={message.audio} />}
 

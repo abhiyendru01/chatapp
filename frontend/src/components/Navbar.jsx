@@ -2,10 +2,11 @@ import { Link } from "react-router-dom";
 import { useAuthStore } from "../store/useAuthStore";
 import { LogOut, MessageSquare } from "lucide-react";
 
-const Navbar = ({ isChatSelected }) => {
+const Navbar = () => {
   const { logout, authUser } = useAuthStore();
+  const isMobile = window.innerWidth < 768; // Detect mobile screen
 
-  if (isChatSelected) return null; // Return nothing (hide navbar) if chat is selected
+  if (isMobile) return null; // ✅ Remove Navbar completely on mobile
 
   return (
     <header className="bg-base-100 border-b border-base-300 fixed w-full top-0 z-40 backdrop-blur-lg bg-base-100/80">
@@ -22,12 +23,10 @@ const Navbar = ({ isChatSelected }) => {
 
           <div className="flex items-center gap-2">
             {authUser && (
-              <>
-                <button className="flex gap-2 items-center" onClick={logout}>
-                  <LogOut className="size-5" />
-                  <span className="hidden sm:inline">Logout</span>
-                </button>
-              </>
+              <button className="flex gap-2 items-center" onClick={logout}>
+                <LogOut className="size-5" />
+                <span className="hidden sm:inline">Logout</span>
+              </button>
             )}
           </div>
         </div>
