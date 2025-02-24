@@ -24,15 +24,17 @@ const MessageInput = () => {
     formData.append("audio", audioFile);
   
     try {
-      const response = await fetch("http://localhost:5001/api/messages/upload-audio", {
+      const API_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:5001";
+      
+      const response = await fetch(`${API_URL}/api/messages/upload-audio`, {
         method: "POST",
         body: formData,
       });
-  
+    
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
-  
+    
       const data = await response.json();
       console.log("Audio uploaded successfully:", data.url);
       return data.url;
@@ -41,7 +43,6 @@ const MessageInput = () => {
       return null;
     }
   };
-  
 
   // Handle image selection
   const handleImageChange = (e) => {

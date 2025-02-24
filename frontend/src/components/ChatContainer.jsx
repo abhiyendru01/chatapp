@@ -31,7 +31,7 @@ const ChatContainer = () => {
     }
 
     return () => unsubscribeFromMessages();
-  }, [selectedUser?._id]); // ✅ Removed unnecessary dependencies
+  }, [selectedUser?._id]);
 
   // Scroll to the latest message when new messages arrive
   useEffect(() => {
@@ -95,15 +95,20 @@ const ChatContainer = () => {
                     {message.text}
                   </p>
                 )}
+
+                {/* Handling large image sizes */}
                 {message.image && (
-                  <img
-                    src={message.image}
-                    alt="Attachment"
-                    className="w-full mt-3 rounded-md shadow-md"
-                  />
+                  <div className="overflow-hidden rounded-md shadow-md mt-3">
+                    <img
+                      src={message.image}
+                      alt="Attachment"
+                      className="w-full h-auto max-w-[300px] sm:max-w-[400px] md:max-w-[500px] lg:max-w-[600px] object-cover"
+                    />
+                  </div>
                 )}
+
                 {message.audio && <AudioMessage audioSrc={message.audio} />}
-                
+
                 <div
                   className={`mt-1 text-xs ${
                     message.senderId === authUser._id
