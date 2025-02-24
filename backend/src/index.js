@@ -23,10 +23,11 @@ const allowedOrigins = [
   "http://localhost:5001",
 ];
 
-// Middleware setup
-app.use(express.json());
+// Middleware setup with increased body size limits
+app.use(express.json({ limit: '50mb' }));  // Set limit for JSON data
+app.use(express.urlencoded({ limit: '50mb', extended: true }));  // Set limit for URL-encoded data
 app.use(cookieParser());
-app.use(express.urlencoded({ extended: true }));
+
 // CORS setup to allow requests from allowed origins
 app.use(
   cors({
@@ -80,6 +81,7 @@ if (process.env.NODE_ENV === "production") {
     res.sendFile(path.join(__dirname, "../frontend", "dist", "index.html"));
   });
 }
+
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/sw.js')
@@ -97,4 +99,3 @@ server.listen(PORT, () => {
   console.log(`Server is running on PORT: ${PORT}`);
   connectDB();
 });
-

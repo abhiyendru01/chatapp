@@ -54,7 +54,7 @@ const AudioMessage = ({ audioSrc, isSender = true }) => {
 
   return (
     <div className={`chat ${isSender ? "chat-end" : "chat-start"}`}>
-      <div className={` rounded ${isSender ? "chat-bubble-secondary " : "chat-bubble-primary"} 
+      <div className={` rounded ${isSender ? "chat-bubble-primary " : "chat-bubble-secondary"} 
         flex items-center gap-4 min-w-[300px] max-w-[500px] p-2`}>
         <button
           onClick={togglePlay}
