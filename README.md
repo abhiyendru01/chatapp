@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 chat app using MERN
 created by rahul
 live demo:- https://chatapp003.vercel.app
@@ -40,3 +41,6 @@ npm run build
 npm start
 ```
 >>>>>>> 9374956b8ce18f442cf22d142528612689509688
+=======
+# chatapp
+>>>>>>> origin/main
