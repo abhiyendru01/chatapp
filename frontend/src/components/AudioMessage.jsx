@@ -10,10 +10,28 @@ const AudioMessage = ({ audioSrc, isSender = true }) => {
   useEffect(() => {
     if (!waveformRef.current) return;
 
+    // Destroy existing WaveSurfer instance if it exists
+    if (wavesurfer.current) {
+      wavesurfer.current.destroy();
+    }
+
+    // Get DaisyUI theme colors from CSS variables
+    const waveColor = isSender
+      ? getComputedStyle(document.documentElement)
+          .getPropertyValue("--primary-content")
+          
+      : getComputedStyle(document.documentElement)
+          .getPropertyValue("--base-content")
+         
+    const progressColor = getComputedStyle(document.documentElement)
+      .getPropertyValue("--primary")
+      .trim() || "#ff7f50"; // Fallback to orange if not found
+
+    // Create a new WaveSurfer instance
     wavesurfer.current = WaveSurfer.create({
       container: waveformRef.current,
-      waveColor: isSender ? "#ffffff" : "#333333", // Ensure proper contrast
-      progressColor: "#ff7f50",
+      waveColor, // Use DaisyUI theme color for wave
+      progressColor, // Use DaisyUI theme color for progress
       barWidth: 2,
       barGap: 3,
       barRadius: 3,
@@ -53,12 +71,12 @@ const AudioMessage = ({ audioSrc, isSender = true }) => {
   };
 
   return (
-    <div className={`chat ${isSender ? "chat-end" : "chat-start"} w-full max-w-[90%] sm:max-w-[75%]`}>
-      <div className={`
-        rounded-lg p-3 shadow-md flex items-center gap-3 
-        ${isSender ? "bg-primary text-primary-content" : "bg-base-300 text-base-content"}
-        w-full max-w-[350px] sm:max-w-[400px] md:max-w-[450px]
-      `}>
+    <div
+      className={`${
+        isSender ? "bg-primary/80" : "bg-base-300/80"
+      } p-4 rounded-lg shadow-lg w-auto max-w-[75%] md:max-w-[60%]`}
+    >
+      <div className="flex items-center gap-3">
         {/* Play/Pause Button */}
         <button
           onClick={togglePlay}
@@ -85,7 +103,11 @@ const AudioMessage = ({ audioSrc, isSender = true }) => {
         </div>
 
         {/* Duration */}
-        <span className="text-xs font-medium opacity-90 min-w-[40px] text-right">
+        <span
+          className={`text-xs font-medium opacity-90 min-w-[40px] text-right ${
+            isSender ? "text-primary-content" : "text-base-content"
+          }`}
+        >
           {duration}
         </span>
       </div>

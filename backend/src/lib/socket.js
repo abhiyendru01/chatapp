@@ -1,8 +1,8 @@
 import { Server } from "socket.io";
 import http from "http";
 import express from "express";
-import User from "../models/user.model.js"; // Assuming you have this model file
-import { sendPushNotification } from "./firebaseAdmin.js"; // Function to send push notifications
+import User from "../models/user.model.js";  // Your user model
+import { sendPushNotification } from "./firebaseAdmin.js";  // Function to send push notifications
 
 const app = express();
 const server = http.createServer(app);
@@ -11,16 +11,15 @@ const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
     origin: [
-      "http://localhost:5173", // Development frontend
-      "https://chatapp003.vercel.app", // Production frontend
-      "https://fullstack-chat-app-master-j115.onrender.com", // Render backend
+      "http://localhost:5173", // Frontend URL during development
+      "https://chatapp003.vercel.app", // Frontend URL in production
     ],
     methods: ["GET", "POST"],
-    credentials: true, // Allows cookies and authentication headers
+    credentials: true,
   },
 });
 
-let userSocketMap = {}; // Store userId to socketId mapping
+let userSocketMap = {};  // Store userId to socketId mapping
 
 // Function to retrieve the receiver's FCM token from the database
 async function getReceiverFCMToken(receiverId) {
@@ -44,13 +43,7 @@ async function getReceiverFCMToken(receiverId) {
   }
 }
 
-// Function to get receiver's socket ID
-export function getReceiverSocketId(receiverId) {
-  return userSocketMap[receiverId] || null;
-}
-
-
-
+// Listen for incoming connections
 io.on("connection", (socket) => {
   console.log(`User connected: ${socket.id}`);
 
@@ -58,101 +51,45 @@ io.on("connection", (socket) => {
   if (userId) {
     userSocketMap[userId] = socket.id;
     console.log(`User ${userId} is now online.`);
-    io.emit("getOnlineUsers", Object.keys(userSocketMap));
+    io.emit("getOnlineUsers", Object.keys(userSocketMap));  // Update online users list
   }
 
-  socket.on("disconnect", () => {
-    if (userId) {
-      console.log(`User ${userId} disconnected.`);
-      delete userSocketMap[userId];
-      io.emit("getOnlineUsers", Object.keys(userSocketMap));
-    }
-  });
-});
-// When a new user connects
-io.on("connection", (socket) => {
-  console.log(`User connected: ${socket.id}`);
-
-  // Retrieve the userId from the query string during socket connection
-  const userId = socket.handshake.query.userId;
-
-  if (userId) {
-    userSocketMap[userId] = socket.id; // Store userId with socket id
-    console.log(`User ${userId} is now online.`);
-  } else {
-    console.error("No userId provided in the socket handshake.");
-    socket.disconnect(); // Disconnect if no userId is provided
-    return;
-  }
-
-  // Emit updated online users list to all connected clients
-  io.emit("getOnlineUsers", Object.keys(userSocketMap));
-
-  // Handle typing events
-  socket.on("typing", (receiverId) => {
-    // Emit to the other user (receiver)
-    const receiverSocketId = userSocketMap[receiverId];
-    if (receiverSocketId) {
-      io.to(receiverSocketId).emit("typing", userId);
-    }
-  });
-
-  // Handle stop typing events
-  socket.on("stopTyping", (receiverId) => {
-    // Emit to the other user (receiver)
-    const receiverSocketId = userSocketMap[receiverId];
-    if (receiverSocketId) {
-      io.to(receiverSocketId).emit("stopTyping", userId);
-    }
-  });
-
-  // Handle sending messages
-  socket.on("sendMessage", async ({ receiverId, message }) => {
+  socket.on("call", async (receiverId) => {
     const senderId = userId;
 
     if (!receiverId || !senderId) {
-      console.error("sendMessage: Missing senderId or receiverId.");
+      console.error("call: Missing senderId or receiverId.");
       return;
     }
 
-    console.log(`📩 Message from ${senderId} to ${receiverId}: ${message}`);
-
-    // Find the receiver's socketId
+    // Check if the receiver is online
     const receiverSocketId = userSocketMap[receiverId];
 
     if (receiverSocketId) {
-      console.log(`✅ User ${receiverId} is online, sending message.`);
-      // Emit the new message to the receiver
-      io.to(receiverSocketId).emit("newMessage", { senderId, message });
+      console.log(`✅ User ${receiverId} is online, sending call event.`);
+      io.to(receiverSocketId).emit("incomingCall", { senderId });
     } else {
-      console.log(`⚠️ User ${receiverId} is offline, sending push notification.`);
-
-      // Retrieve receiver's FCM token
+      console.log(`⚠️ User ${receiverId} is offline.`);
+      // Send a push notification if the receiver is offline
       const receiverFCMToken = await getReceiverFCMToken(receiverId);
       if (receiverFCMToken) {
-        await sendPushNotification(receiverFCMToken, message);
+        await sendPushNotification(receiverFCMToken, "You have an incoming call!");
       } else {
         console.warn(`🚨 User ${receiverId} does not have an FCM token.`);
       }
     }
-
-    // Emit the new message to the sender as well
-    const senderSocketId = userSocketMap[senderId];
-    if (senderSocketId) {
-      console.log(`✅ User ${senderId} is online, sending message back to sender.`);
-      io.to(senderSocketId).emit("newMessage", { senderId, message });
-    }
   });
 
-  // Handle user disconnection
+  // Handle user disconnections
   socket.on("disconnect", () => {
     if (userId) {
-      console.log(`🔴 User ${userId} disconnected.`);
-      delete userSocketMap[userId]; // Remove from online users
-      io.emit("getOnlineUsers", Object.keys(userSocketMap)); // Emit updated online users list
+      console.log(`User ${userId} disconnected.`);
+      delete userSocketMap[userId];  // Remove from online users
+      io.emit("getOnlineUsers", Object.keys(userSocketMap));  // Emit updated online users list
     }
   });
 });
 
 // Export the app, server, and io
 export { app, server, io };
+export { getReceiverSocketId, io };

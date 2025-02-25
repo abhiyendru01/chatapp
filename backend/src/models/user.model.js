@@ -27,7 +27,11 @@ const userSchema = new mongoose.Schema(
     friendRequests: [{
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-    }]
+    }],
+    fcmToken: {  
+      type: String,
+      default: "", 
+    }
   },
   { timestamps: true }
 );
